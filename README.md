@@ -1,4 +1,7 @@
 # autoFoci
 Automated foci counting software especially designed for high-throughput image analysis in low dose experiments.
 
-The source code will be added to this repository after publishing of the corresponding manuscript. 
+To use autoFoci please make sure that Java 8 is installed on your operating system:
+http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+
+Then please download the autoFoci.jar file and execute it. 
