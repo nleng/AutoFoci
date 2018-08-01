@@ -6,4 +6,4 @@ http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.h
 
 Then please download the autoFoci.jar file and execute it. 
 
-The ImageJ used within autoFoci is not compatible with newer Java versions, but we are working on support for Java 9. 
+The ImageJ version used within autoFoci is not compatible with newer Java versions, but we are working on support for Java 9. 
