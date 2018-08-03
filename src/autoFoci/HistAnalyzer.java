@@ -63,7 +63,7 @@ import java.awt.image.BufferedImage;
 
 
 public class HistAnalyzer {
-    // there are two validation methods availabe: validate_threshold, validate_threshold with use_overlay_toggle=true (foci are marked)
+    // there are two validation methods availabe: validate_threshold and validate_threshold with use_overlay_toggle=true (foci are marked). 
 
     boolean use_overlay_toggle = true;
 
@@ -167,10 +167,7 @@ public class HistAnalyzer {
         oep_out = new double[13][];
 
         int table_length = table_data.size();
-        double[][] wrong_output = {
-            {},
-            {}
-        };
+        double[][] wrong_output = {{}, {}};
         if (table_length < 1)
             return wrong_output;
         if (table_data.get(0).length < 2)
@@ -183,13 +180,12 @@ public class HistAnalyzer {
         oep_out[4] = new double[1]; // 4 is the this.plot_limit (40% below)
         oep_out[5] = new double[1]; // 5 is the median for change_factor calculation, calculated from oep_out[3]
         oep_out[6] = new double[table_length]; // 6 is complete OEP without f()
-        oep_out[7] = new double[1]; // 7 is the left side STD
-        oep_out[8] = new double[1]; // 8 is mean of biggest X foci
-        oep_out[9] = new double[table_length]; // 9 is the pearson correlation coefficient of the cell
-        oep_out[10] = new double[1]; // 10 is the mean pearson correlation coefficient of the cell  ?? should be the same as 9 right now?
-        oep_out[11] = new double[table_length]; // 11 is the mean pearson correlation coefficient around single object
-        oep_out[12] = new double[1]; // 12 is the total number of excluded cells
-        oep_out[12][0] = excluded_cells;
+        oep_out[7] = new double[1]; // 7 is mean of biggest X foci
+        oep_out[8] = new double[table_length]; // 8 is the pearson correlation coefficient of the cell
+        oep_out[9] = new double[1]; // 9 is the mean pearson correlation coefficient of the cell  ?? should be the same as 9 right now?
+//         oep_out[10] = new double[table_length]; // NOT USED, 10 is the mean pearson correlation coefficient around single object
+        oep_out[10] = new double[1]; // 11 is the total number of excluded cells
+        oep_out[10][0] = excluded_cells;
         int n = 0;
         int oep_count = 0;
         double cell_num_tmp = 0.;
@@ -205,10 +201,10 @@ public class HistAnalyzer {
             }
             oep_out[2][i] = (int) cell_num_tmp;
 
-            oep_out[9][i] = pearson_correlation;
+            oep_out[8][i] = pearson_correlation;
 
-            double pearson_correlation_object = table_data.get(i)[23];
-            oep_out[11][i] = pearson_correlation_object;
+//             double pearson_correlation_object = table_data.get(i)[23];
+//             oep_out[10][i] = pearson_correlation_object;
 
             double oep_tmp = focus_evaluation_parameter(table_data.get(i));
             oep_out[3][i] = oep_tmp;
@@ -218,17 +214,16 @@ public class HistAnalyzer {
             oep_out[0][i] = oep_inverse_tmp;
             if (oep_inverse_tmp < oep_lim) oep_count++;
         }
-        oep_out[10][0] = pearson_correlation_mean / n;
+        oep_out[9][0] = pearson_correlation_mean / n;
         if (full_output)
             return oep_out;
         // if there should be an auto-plotrange
         if (auto_limit) { //  && oep_out[0].length > 1000
             Arrays.sort(oep_out[0]); // HERE CELL NUMBER IS NOT CORRECT ANYMORE (does not matter since only oep_out[3] is used together with cell num)
-            int lim = (int)(0.4 * oep_out[0].length);
+            int lim = (int)(0.42 * oep_out[0].length);
             oep_out[1] = Arrays.copyOfRange(oep_out[0], 0, lim);
             oep_out[4][0] = oep_out[0][lim]; // to set the value of plot_limit_field
             int lim_median = (int)(0.5 * oep_out[3].length);
-            // 					Arrays.sort(oep_out[3]);
             // copying the array because the original array should still work with the cell num array
             double[] oep_lin_sorted = Arrays.copyOf(oep_out[3], oep_out[3].length);
             Arrays.sort(oep_lin_sorted);
@@ -244,19 +239,8 @@ public class HistAnalyzer {
                 biggest_mean += oep_lin_sorted[i];
             }
             biggest_mean /= number_of_biggest;
-            oep_out[8][0] = biggest_mean;
-            System.out.print("biggest_mean: ");
-            p(biggest_mean);
-            // calculate the left side STD
-            double left_side_std = 0.;
-            for (int i = 0; i < lim_median; i++) {
-                left_side_std += Math.pow(median - oep_lin_sorted[i], 2);
-            }
-            left_side_std /= lim_median;
-            left_side_std = Math.sqrt(left_side_std);
-            oep_out[7][0] = left_side_std;
-            System.out.print("left_side_std: ");
-            p(left_side_std);
+            oep_out[7][0] = biggest_mean;
+            p("biggest_mean: " + biggest_mean);
         } else {
             oep_out[1] = new double[oep_count];
             oep_count = 0;
@@ -394,7 +378,7 @@ public class HistAnalyzer {
 
         double n_total = 0;
         double cell_num_tmp = oep[2][0];
-        double pearson_tmp = oep[9][0]; // pearson correlation coefficient of the cell
+        double pearson_tmp = oep[8][0]; // pearson correlation coefficient of the cell
         int cell_foci = 0;
 
         // to consider the total cell oep (from foci not BG objects) rather than only the number of foci.
@@ -415,7 +399,7 @@ public class HistAnalyzer {
                     oep_cell_list.add(oep_and_pearson);
                 }
                 cell_num_tmp = oep[2][i];
-                pearson_tmp = oep[9][i];
+                pearson_tmp = oep[8][i];
                 cell_foci = 0;
                 oep_cell = 0.;
             }
@@ -630,35 +614,19 @@ public class HistAnalyzer {
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                int[] rgb = {
-                    0,
-                    0,
-                    0
-                };
-                rgb = ip_original.getPixel(i, j, rgb); // auch ohne "rgb =" haette rgb den wert zugewiesen, seltsame funktionsdefinition 
+                int[] rgb = {0, 0,0};
+                rgb = ip_original.getPixel(i, j, rgb);
 
-                // oder: second - master - together. this way it is easier to look at master+together
-                int[] second = {
-                    rgb[this.second_channel],
-                    rgb[this.second_channel],
-                    rgb[this.second_channel]
-                };
+                // or: second - master - together. this way it is easier to look at master+together
+                int[] second = {rgb[this.second_channel], rgb[this.second_channel], rgb[this.second_channel]};
                 ipSplit.putPixel(i, j, second);
 
-                int[] master = {
-                    rgb[this.master_channel],
-                    rgb[this.master_channel],
-                    rgb[this.master_channel]
-                };
+                int[] master = {rgb[this.master_channel], rgb[this.master_channel], rgb[this.master_channel]};
                 ipSplit.putPixel(i, j + height, master);
 
                 // take all 3 channels, since we already removed the dapi channel in ip (so that the marks are white not yellow)
                 rgb = ip.getPixel(i, j, rgb);
                 ipSplit.putPixel(i, j + 2 * height, rgb);
-                // 				int[] together = {0, 0, 0};
-                // 				together[this.master_channel] = rgb[this.master_channel];
-                // 				together[this.second_channel] = rgb[this.second_channel];
-                // 				ipSplit.putPixel(i, j + 2*height, together);
             }
         }
         // 	  ContrastEnhancer ce = new ContrastEnhancer();
@@ -675,27 +643,15 @@ public class HistAnalyzer {
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                int[] rgb = {
-                    0,
-                    0,
-                    0
-                };
+                int[] rgb = {0, 0, 0};
                 // take original for single channels
-                rgb = ip_original.getPixel(i, j, rgb); // auch ohne "rgb =" haette rgb den wert zugewiesen, seltsame funktionsdefinition 
+                rgb = ip_original.getPixel(i, j, rgb);
 
                 // oder: second - master - together. this way it is easier to look at master+together
-                int[] second = {
-                    rgb[this.second_channel],
-                    rgb[this.second_channel],
-                    rgb[this.second_channel]
-                };
+                int[] second = {rgb[this.second_channel], rgb[this.second_channel], rgb[this.second_channel]};
                 ipSplit.putPixel(i, j, second);
 
-                int[] master = {
-                    rgb[this.master_channel],
-                    rgb[this.master_channel],
-                    rgb[this.master_channel]
-                };
+                int[] master = {rgb[this.master_channel], rgb[this.master_channel], rgb[this.master_channel]};
                 ipSplit.putPixel(i + width, j, master);
 
                 // take overlay for both channels together
@@ -704,11 +660,7 @@ public class HistAnalyzer {
             }
         }
 
-        String[] letters = {
-            "R",
-            "G",
-            "B"
-        };
+        String[] letters = {"R", "G", "B"};
         Color[] colors = {
             new Color(150, 0, 0, 255),
             new Color(0, 150, 0, 255),
@@ -769,11 +721,7 @@ public class HistAnalyzer {
                 if (counter < image_list.size() && counter < image_names_list.size()) {
                     ImageProcessor ip = image_list.get(counter);
                     if (!this.use_overlay_toggle && c == 0) { // ffff HERE
-                        String[] letters = {
-                            "R",
-                            "G",
-                            "B"
-                        };
+                        String[] letters = {"R","G", "B"};
                         Color[] colors = {
                             new Color(130, 0, 0, 255),
                             new Color(0, 130, 0, 255),
@@ -846,7 +794,7 @@ public class HistAnalyzer {
     }
 
 
-    public boolean create_overlay_stack(String image_dir_path, String table_path, String extension, double[] oep, double oep_thresh, int overlay_offset, double overlay_max_length, int master_channel, int second_channel, int dapi_channel, boolean blind_overlay, boolean remove_dapi_channel, boolean skip_cells_with_many_foci, int max_foci) {
+    public boolean create_overlay_stack(String image_dir_path, String table_path, String extension, double[] oep, double oep_thresh, int overlay_offset, double overlay_max_length, int master_channel, int second_channel, int dapi_channel, boolean blind_overlay, boolean only_show_master_and_second_channel, boolean skip_cells_with_many_foci, int max_foci) {
         this.second_channel = second_channel;
         this.master_channel = master_channel;
         this.dapi_channel = dapi_channel;
@@ -913,9 +861,10 @@ public class HistAnalyzer {
                             ip = imp.getProcessor();
                             ip_original = ip.duplicate(); // are both the same, but it is needed in case the overlay differs
                             // remove the third channel as defined in tab 1
-                            if (remove_dapi_channel) {
+                            if (only_show_master_and_second_channel) {
                                 FloatProcessor fp = new FloatProcessor(new float[width][height]);
-                                ip.setPixels(this.dapi_channel, fp);
+                                // remove all channels that are neither master nor second channel. this way it will also work if channel 3 is defined as one of the others. 
+                                for (int c=0; c<3; c++) if (c != this.master_channel && c != this.second_channel) ip.setPixels(c, fp);
                             }
                         }
                     }
@@ -991,10 +940,10 @@ public class HistAnalyzer {
         this.threshy_positive_max = this.oep_thresh;
         this.threshy_negative_max = this.oep_thresh;
         this.threshy_interval = 0.06 * oep_thresh;
-        p("" + oep_thresh);
-        p("" + oep_all[8][0]);
-        p("#--------------------#");
-        this.threshy_interval = 0.05 * (oep_all[8][0] - oep_thresh);
+//         p("" + oep_thresh);
+//         p("" + oep_all[7][0]);
+//         p("#--------------------#");
+        this.threshy_interval = 0.05 * (oep_all[7][0] - oep_thresh);
         this.num_positive_values = 0;
         this.num_negative_values = 0;
         this.threshies = new ArrayList < > ();
@@ -1008,15 +957,13 @@ public class HistAnalyzer {
 
 
     public void validate_threshold() {
-        // DOES NOT WORK WITH OVERLAY RIGHT NOW; BECAUSE XY ARE FROM ORIGINAL TABLE; BUT OEP IS WITH MAX OBJECTS!
         get_XY(this.table_path);
 
         boolean verified = false;
 
         // add one extra image for both sides in case there are cells with many foci, which are kicked out after.
         int additional_images = 0;
-        if (this.skip_cells_with_many_foci)
-            additional_images = 2;
+        if (this.skip_cells_with_many_foci) additional_images = 2;
 
         this.images_to_show = new ArrayList < > ();
         for (int i = 0; i < this.image_num_validation + additional_images; i++)
@@ -1125,7 +1072,7 @@ public class HistAnalyzer {
             ImageProcessor ip_empty = new ColorProcessor(imp_0.getWidth() * this.image_num_validation, imp_0.getHeight());
             ip_empty.setFont(new Font("San Serif", Font.BOLD, 12));
             ip_empty.setColor(new Color(150, 150, 150, 255));
-            ip_empty.drawString("All images are excluded due to option:", 20, 30);
+            ip_empty.drawString("No images could be found. Maybe they are excluded due to option:", 20, 30);
             ip_empty.drawString("'Exclude cells with more foci than...'", 20, 50);
             this.validate_images = new ImagePlus();
             this.validate_images.setProcessor(ip_empty);
@@ -1187,8 +1134,8 @@ public class HistAnalyzer {
             p(this.foci_automatic);
 
             String foci_auto_str = "";
-            if (!this.ana.blind_validate)
-                foci_auto_str = " (autom. " + String.valueOf(this.foci_automatic) + " foci)";
+//             if (!this.ana.blind_validate) 
+            foci_auto_str = " (autom. " + String.valueOf(this.foci_automatic) + " foci)";
 
             GreenJLabel validate_label = new GreenJLabel("<html><p> How many foci do you count?" + foci_auto_str + "</p></html>");
 
@@ -1854,32 +1801,14 @@ public class HistAnalyzer {
         ArrayList < Double[] > data = new ArrayList < Double[] > ();
         try {
             List < String > lines = Files.readAllLines(Paths.get(fileName)); // , StandardCharsets.UTF_8
-            for (int i = 0; i < lines.size(); i++) {
+            for (int i=0; i<lines.size(); i++) {
                 if (i < 2) continue;
-                //                     p(lines.get(i));
+                // p(lines.get(i));
                 String[] lineSplit = lines.get(i).split("\t");
                 Double[] lineSplitDouble = new Double[lineSplit.length - 1];
-                for (int bb = 1; bb < lineSplit.length; bb++) {
-                    lineSplitDouble[bb - 1] = Double.parseDouble(lineSplit[bb]);
-                }
+                for (int bb = 1; bb < lineSplit.length; bb++) lineSplitDouble[bb - 1] = Double.parseDouble(lineSplit[bb]);
                 data.add(lineSplitDouble);
             }
-            //                 FileReader fr = new FileReader(fileName);
-            //                 BufferedReader br = new BufferedReader(fr);//Can also use a Scanner to read the file
-            //                 int lineNum = 0;
-            //                 while((line = br.readLine()) != null) {
-            //                     if(lineNum<2) { // skip first two lines
-            //                         lineNum++;
-            //                         continue;
-            //                     }
-            //                     String[] lineSplit = line.split("\t");
-            //                     Double[] lineSplitDouble = new Double[lineSplit.length-1];
-            //                     for(int bb=1;bb<lineSplit.length;bb++) {
-            //                         lineSplitDouble[bb-1] = Double.parseDouble(lineSplit[bb]);
-            //                     }
-            //                     data.add(lineSplitDouble);
-            //                     
-            //                 }
         } catch (Exception e) {
             // we don't want an error message, but rather to skip those files.
             // 		      error_message(e);
@@ -1898,17 +1827,6 @@ public class HistAnalyzer {
                 String[] lineSplit = lines.get(i).split("\t");
                 imageNames.add(lineSplit[0]);
             }
-            //             FileReader fr = new FileReader(fileName);
-            //             BufferedReader br = new BufferedReader(fr);//Can also use a Scanner to read the file
-            //             int lineNum = 0;
-            //             while((line = br.readLine()) != null) {
-            //                 if(lineNum<2) { // skip first two lines
-            //                     lineNum++;
-            //                     continue;
-            //                 }
-            //                 String[] lineSplit = line.split("\t");
-            //                 imageNames.add(lineSplit[0]);
-            //             }
         } catch (Exception e) {
             error_message(e);
         }
@@ -1925,7 +1843,7 @@ public class HistAnalyzer {
             line = br.readLine();
             String[] lineSplit = line.split(" ");
             excluded_cells = Integer.parseInt(lineSplit[0]);
-            p("excluded_cells: " + excluded_cells);
+            p("excluded cells during object detection (not because of max foci option): " + excluded_cells);
         } catch (Exception e) {
             // we don't want an error message, but rather to skip those files.
             //               error_message(e);

@@ -54,7 +54,7 @@ public class AnalyzeDialog {
 
     String image_root_path, image_dir_path, dir_name;
 
-    boolean use_overlay_images, done = false, blind, blind_validate, skip_cells_with_many_foci = false, auto_limit = true;
+    boolean use_overlay_images, done = false, blind, skip_cells_with_many_foci = false, auto_limit = true;
     int counter, stdev_of_num = 500, minArea, master_channel, second_channel, dapi_channel, max_foci, result_files_total, overlay_offset, max_objects;
     double oep_thresh, change_count, kl_divergence, r_squares, overlay_max_length;
     // double master_weight;
@@ -76,7 +76,7 @@ public class AnalyzeDialog {
     // MultiType is a class with mixed types
     ArrayList < MultiType > output_table = new ArrayList < MultiType > ();
 
-    public AnalyzeDialog(int stdev_of_num, double half_range_oep, boolean use_overlay_images, int minArea, int master_channel, int second_channel, int dapi_channel, boolean blind, boolean blind_validate, boolean skip_cells_with_many_foci, int max_foci, int overlay_offset, double overlay_max_length) {
+    public AnalyzeDialog(int stdev_of_num, double half_range_oep, boolean use_overlay_images, int minArea, int master_channel, int second_channel, int dapi_channel, boolean blind, boolean skip_cells_with_many_foci, int max_foci, int overlay_offset, double overlay_max_length) {
         this.stdev_of_num = stdev_of_num;
         this.half_range_oep = half_range_oep;
         this.minArea = minArea;
@@ -88,7 +88,6 @@ public class AnalyzeDialog {
 
         this.use_overlay_images = use_overlay_images;
         this.blind = blind;
-        this.blind_validate = blind_validate;
         this.skip_cells_with_many_foci = skip_cells_with_many_foci;
         this.max_foci = max_foci;
     }
@@ -184,8 +183,7 @@ public class AnalyzeDialog {
                         this.counter++;
                         continue;
                     }
-                    if (this.auto_limit)
-                        this.plot_limit = this.oep_all[4][0];
+                    if (this.auto_limit) this.plot_limit = this.oep_all[4][0];
                     found = true;
                 } catch (Exception e) {
                     error_message(e);
@@ -276,10 +274,7 @@ public class AnalyzeDialog {
 
         ArrayList < Double > threshy_list = new ArrayList < > ();
 
-        double pearson_correlation = this.oep_all[10][0];
-
         double upper_bound = 2. * estimated_threshold;
-
         double pearson_threshold = hista.colocalization_pearson_threshold(this.oep_all, max_position, upper_bound);
         threshy_list.add(pearson_threshold);
         ArrayList < Double > poisson_threshy_arr = hista.poisson_threshold(this.oep, this.cell, max_position, upper_bound);
@@ -342,7 +337,7 @@ public class AnalyzeDialog {
         this.oep_chart.setPreferredSize(new Dimension(900, 400));
 
 
-        GreenJButton validate_button_1 = new GreenJButton("Validate 1");
+        GreenJButton validate_button_1 = new GreenJButton("Threshold validation");
         validate_button_1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 AnalyzeDialog.this.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -355,18 +350,19 @@ public class AnalyzeDialog {
             }
         });
 
-        GreenJButton validate_button_2 = new GreenJButton("Validate 2");
-        validate_button_2.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                AnalyzeDialog.this.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                AnalyzeDialog.this.change_count = 0.;
-                hista.validate_threshold(AnalyzeDialog.this.image_dir_path, AnalyzeDialog.this.oep_all, AnalyzeDialog.this.oep, AnalyzeDialog.this.image_names, AnalyzeDialog.this.skip_cells_with_many_foci, AnalyzeDialog.this.max_foci, AnalyzeDialog.this.oep_all[5][0], AnalyzeDialog.this.oep_thresh, AnalyzeDialog.this.master_channel, AnalyzeDialog.this.second_channel, AnalyzeDialog.this.dapi_channel, overlay_offset, overlay_max_length, false);
-                // not really needed.
-                AnalyzeDialog.this.oep_hist_panel.threshold_field.setValue(hista.inverse(AnalyzeDialog.this.oep_thresh));
-                AnalyzeDialog.this.oep_hist_panel.set_x();
-                AnalyzeDialog.this.frame.setCursor(Cursor.getDefaultCursor());
-            }
-        });
+        // an alternative way of validation. It is not visible to not cause confusion. 
+//         GreenJButton validate_button_2 = new GreenJButton("Validate 2");
+//         validate_button_2.addActionListener(new ActionListener() {
+//             public void actionPerformed(ActionEvent actionEvent) {
+//                 AnalyzeDialog.this.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+//                 AnalyzeDialog.this.change_count = 0.;
+//                 hista.validate_threshold(AnalyzeDialog.this.image_dir_path, AnalyzeDialog.this.oep_all, AnalyzeDialog.this.oep, AnalyzeDialog.this.image_names, AnalyzeDialog.this.skip_cells_with_many_foci, AnalyzeDialog.this.max_foci, AnalyzeDialog.this.oep_all[5][0], AnalyzeDialog.this.oep_thresh, AnalyzeDialog.this.master_channel, AnalyzeDialog.this.second_channel, AnalyzeDialog.this.dapi_channel, overlay_offset, overlay_max_length, false);
+//                 // not really needed.
+//                 AnalyzeDialog.this.oep_hist_panel.threshold_field.setValue(hista.inverse(AnalyzeDialog.this.oep_thresh));
+//                 AnalyzeDialog.this.oep_hist_panel.set_x();
+//                 AnalyzeDialog.this.frame.setCursor(Cursor.getDefaultCursor());
+//             }
+//         });
 
         GreenJButton plot_limit_button = new GreenJButton("Set limit");
         plot_limit_button.addActionListener(new ActionListener() {
@@ -389,6 +385,7 @@ public class AnalyzeDialog {
 
 
         GreenJButton approve_button = new GreenJButton("Approve");
+        if (AnalyzeDialog.this.use_overlay_images) approve_button = new GreenJButton("Create images with markers");
         approve_button.setForeground(new Color(250, 250, 50));
         approve_button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -625,24 +622,24 @@ public class AnalyzeDialog {
 
         addComp(this.analyze_panel, gbl, blind_panel, 0, 0, 3, 1, true, 1);
 
-
         GreenJPanel approve_textfield_panel = new GreenJPanel(); // new GridLayout(6,1)
         approve_textfield_panel.setLayout(gbl);
-        addComp(approve_textfield_panel, gbl, validate_button_1, 0, 0, 1, 1, true, 1);
-        addComp(approve_textfield_panel, gbl, validate_button_2, 1, 0, 1, 1, true, 1);
-        addComp(approve_textfield_panel, gbl, approve_button, 2, 0, 1, 1, true, 1);
-
-        if (!this.use_overlay_images) {
-            addComp(approve_textfield_panel, gbl, reject_button, 3, 0, 1, 1, true, 1);
-            addComp(approve_textfield_panel, gbl, back_button, 4, 0, 1, 1, true, 1);
-        }
 
         NumberFormat format_2_digits = NumberFormat.getNumberInstance();
         format_2_digits.setMinimumFractionDigits(2);
         this.plot_limit_field = new GreenJFormattedTextField(format_2_digits);
         this.plot_limit_field.setValue(this.plot_limit);
 
-        addComp(approve_textfield_panel, gbl, new GreenJLabel("<html>Upper plot limit:<br>(Limit of minimum algorithms<br>is half the plot range)</html>"), 4, 0, 1, 1, true, 1);
+        addComp(approve_textfield_panel, gbl, validate_button_1, 0, 0, 1, 1, true, 1);
+//         addComp(approve_textfield_panel, gbl, validate_button_2, 1, 0, 1, 1, true, 1);
+        addComp(approve_textfield_panel, gbl, approve_button, 1, 0, 1, 1, true, 1);
+
+        if (!this.use_overlay_images) {
+            addComp(approve_textfield_panel, gbl, reject_button, 2, 0, 1, 1, true, 1);
+            addComp(approve_textfield_panel, gbl, back_button, 3, 0, 1, 1, true, 1);
+        }
+
+        addComp(approve_textfield_panel, gbl, new GreenJLabel("<html>Upper plot limit:<br>(Limit of minimum algorithms<br>is half the plot range.)</html>"), 4, 0, 1, 1, true, 1);
         GreenJPanel plot_limit_panel = new GreenJPanel(new GridLayout(1, 2));
         plot_limit_panel.add(this.plot_limit_field);
         plot_limit_panel.add(plot_limit_button);
@@ -669,20 +666,15 @@ public class AnalyzeDialog {
         File[] fileList;
         if (use_overlay_images) {
             File res_file = new File(root_path);
-            if (!res_file.isFile())
-                return false;
+            if (!file_used(res_file)) return false;
             fileList = new File[1];
             fileList[0] = res_file;
         } else {
             File dir = new File(root_path);
-            if (count_files_in_dir(dir) == 0)
-                return false;
-            fileList = dir.listFiles();
-            // fffff
-            if (this.blind)
-                shuffle(fileList);
-            else
-                Arrays.sort(fileList);
+            fileList = get_file_list(dir);
+            if (fileList.length == 0) return false;
+            if (this.blind) shuffle(fileList);
+            else Arrays.sort(fileList);
         }
 
         this.frame = new JFrame();
@@ -730,7 +722,7 @@ public class AnalyzeDialog {
     } // END shuffle
 
     public void poisson_label_setText() {
-        this.poisson_label.setText("<html><p>Cells: " + Integer.toString((int) this.oep_all[2][this.oep_all[2].length - 1]) + " used, " + Integer.toString((int) this.oep_all[12][0]) + " excluded" + "<br>Colocalization (Pearson, &lt;0.4 bad): " + Double.toString(round_double(this.oep_all[10][0], 3)) + "<br><br>Difference to perfect Poisson:<br>KL-Divergence: " + Double.toString(this.kl_divergence) + " (ideally &lt;0.004)<br>Residual squares: " + Double.toString(this.r_squares) + " (ideally  &lt;9.0E-4)<br><br>(ideal values depend on the number of <br>foci and cells; here 2000 cells and 2 foci/cell)</p></html>");
+        this.poisson_label.setText("<html><p>Cells: " + Integer.toString((int) this.oep_all[2][this.oep_all[2].length - 1]) + " used, " + Integer.toString((int) this.oep_all[10][0]) + " excluded" + "<br>Colocalization (Pearson, &lt;0.4 bad): " + Double.toString(round_double(this.oep_all[9][0], 3)) + "<br><br>Difference to perfect Poisson:<br>KL-Divergence: " + Double.toString(this.kl_divergence) + " (ideally &lt;0.004)<br>Residual squares: " + Double.toString(this.r_squares) + " (ideally  &lt;9.0E-4)<br><br>(ideal values depend on the number of <br>foci and cells; here 2000 cells and 2 foci/cell)</p></html>");
     }
 
     public static double round_double(double x, int digits) {
@@ -739,15 +731,24 @@ public class AnalyzeDialog {
     }
 
 
-    public int count_files_in_dir(File dir) {
-        int count = 0;
+    public File[] get_file_list(File dir) {
+        int num_files = 0;
+        for (File file: dir.listFiles()) if (file_used(file)) num_files++;
+        File[] fileList = new File[num_files];
+        num_files = 0;
         for (File file: dir.listFiles()) {
-            if (file.isFile() && file.getAbsolutePath().toLowerCase().endsWith(".csv")) {
-                count++;
+            if (file_used(file)) {
+                fileList[num_files] = file;
+                num_files++;
             }
         }
-        return count;
-    } // END count_files_in_dir
+        return fileList;
+    } // END get_file_list
+    
+    public boolean file_used(File file) {
+        String file_name = file.getAbsolutePath().toLowerCase();
+        return file.isFile() && file_name.endsWith(".csv") && !file_name.contains("foci_table");
+    }
 
 
     public boolean check_isFile_and_extension(File file, String extension) {

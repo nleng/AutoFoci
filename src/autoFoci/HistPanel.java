@@ -343,7 +343,7 @@ public class HistPanel { //  extends JPanel
     public void create_histogram(double[] hist_data, double[] hist_data_lin, String title, String xlabel, String xlabel_lin, String ylabel) {
         HistogramDataset dataset = new HistogramDataset();
         //       int bin = 100;
-        int bin = 85;
+        int bin = 100;
         dataset.addSeries("Hula", hist_data, bin);
 
         this.chart = ChartFactory.createHistogram(title, xlabel, ylabel, dataset, PlotOrientation.VERTICAL, true, false, false);

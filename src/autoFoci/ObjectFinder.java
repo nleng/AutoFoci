@@ -47,7 +47,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.BorderLayout;
 import java.awt.Container;
+
+import autoFoci.GreenGUI.GreenJTextArea;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -84,10 +88,10 @@ public class ObjectFinder {
 
     BitSet isObj, isObj_saturated;
 
-    boolean minimum_output, remove_dapi_channel, rename_freaks;
-    int width, height, cell_area, minThresh_above_cell_mean, added_counter, overlay_offset, curr_min_pos, area = 0, visitedCounter = 0, gCounter, cellFoci, file_in_dir_counter = 0, cellNumber = 1, master_channel, second_channel, dapi_channel, maxCH1, maxCH2, maxCH1Transform, maxCH2Transform, minSeparation, minArea, total_cell_num, total_cell_num_analyzed = 0, total_files_in_dir = 0, max1X, max1Y, max2X, max2Y, objectCounter, maxArea_radius, freak_threshold, freak_low_threshold, freak_stdev_threshold, freak_counter_low = 0, freak_counter_high = 0, freak_counter_stdev = 0;
+    boolean minimum_output, rename_freaks;
+    int width, height, cell_area, minThresh_above_cell_mean, added_counter, curr_min_pos, area = 0, visitedCounter = 0, gCounter, cellFoci, file_in_dir_counter = 0, cellNumber = 1, master_channel, second_channel, dapi_channel, maxCH1, maxCH2, maxCH1Transform, maxCH2Transform, minSeparation, minArea, total_cell_num, total_cell_num_analyzed = 0, total_files_in_dir = 0, max1X, max1Y, max2X, max2Y, objectCounter, maxArea_radius, freak_threshold, freak_low_threshold, freak_stdev_threshold, freak_counter_low = 0, freak_counter_high = 0, freak_counter_stdev = 0;
     int[] maxPixels1, maxPixels2, maxPixels1Transform, maxPixels2Transform, thresholds_satisfied_arr_1, thresholds_satisfied_arr_2, thresholds_satisfied_arr_all;
-    double minThresh, cell_max1, cell_max2, foci, oep_thresh, oep, overlay_max_length, stDev_max1, stDev_max2, radius_structuring_element, edgeThreshold, maxDiff, topPixels1, topPixels2, topPixels1Transform, topPixels2Transform, cell_sum1, cell_sum2, cell_sum_squares1, cell_sum_squares2, cellMean1, cellMean2, cellMean1_gradient, cellMean2_gradient, BGlocalSumCH1, BGlocalSumCH2, BGlocalCH1, BGlocalCH2, meanSum1, meanSum2, mean1, mean2, fociPerCell, fociPerCellAME, normDiff, treshForAll, ameTresh, areaBig = 45., stDev_cell1, stDev_cell2, pearson_correlation, pearson_correlation_object, moment_of_inertia_1, moment_of_inertia_2;
+    double minThresh, cell_max1, cell_max2, foci, oep_thresh, oep, stDev_max1, stDev_max2, radius_structuring_element, edgeThreshold, maxDiff, topPixels1, topPixels2, topPixels1Transform, topPixels2Transform, cell_sum1, cell_sum2, cell_sum_squares1, cell_sum_squares2, cellMean1, cellMean2, cellMean1_gradient, cellMean2_gradient, BGlocalSumCH1, BGlocalSumCH2, BGlocalCH1, BGlocalCH2, meanSum1, meanSum2, mean1, mean2, fociPerCell, fociPerCellAME, normDiff, treshForAll, ameTresh, areaBig = 45., stDev_cell1, stDev_cell2, pearson_correlation, pearson_correlation_object, moment_of_inertia_1, moment_of_inertia_2;
     double[] stDev_max_pixels_1, stDev_max_pixels_2;
     double[] oep_arr_1, oep_arr_2, oep_arr_multi;
 
@@ -117,7 +121,7 @@ public class ObjectFinder {
     ProgressFrame progress_gui = new ProgressFrame();
 
 
-    public ObjectFinder(MainFrame main_frame_tmp, String root_path_tmp, String result_dir_tmp, String extension_tmp, int master_channel_tmp, int second_channel_tmp, int dapi_channel_tmp, int freak_threshold_tmp, int freak_low_threshold_tmp, int freak_stdev_threshold_tmp, double radius_structuring_element_tmp, double edgeThreshold_tmp, int minArea_tmp, int minSeparation_tmp, int minThresh_above_cell_mean_tmp, boolean remove_dapi_channel_tmp, double oep_thresh, int overlay_offset_tmp, double overlay_max_length_tmp, boolean rename_freaks_tmp) {
+    public ObjectFinder(MainFrame main_frame_tmp, String root_path_tmp, String result_dir_tmp, String extension_tmp, int master_channel_tmp, int second_channel_tmp, int dapi_channel_tmp, int freak_threshold_tmp, int freak_low_threshold_tmp, int freak_stdev_threshold_tmp, double radius_structuring_element_tmp, double edgeThreshold_tmp, int minArea_tmp, int minSeparation_tmp, int minThresh_above_cell_mean_tmp, double oep_thresh, boolean rename_freaks_tmp) {
 
         this.main_frame = main_frame_tmp;
         this.root_path = root_path_tmp;
@@ -138,9 +142,6 @@ public class ObjectFinder {
         this.minSeparation = minSeparation_tmp;
         this.minThresh_above_cell_mean = minThresh_above_cell_mean_tmp;
         this.oep_thresh = oep_thresh;
-        this.overlay_offset = overlay_offset_tmp;
-        this.overlay_max_length = overlay_max_length_tmp;
-        this.remove_dapi_channel = remove_dapi_channel_tmp;
         this.rename_freaks = rename_freaks_tmp;
     } // END set_params
 
@@ -373,82 +374,93 @@ public class ObjectFinder {
         for (File file: imageList) {
             //             print(file);
             if (check_isFile_and_extension(file)) {
-                this.image_file = file;
-                this.image_name = file.getName();
-                print("File name: " + this.image_name);
+                try {
+                    this.image_file = file;
+                    this.image_name = file.getName();
 
-                ImagePlus imp = new ImagePlus(file.getAbsolutePath());
-                if (imp.getType() != ImagePlus.COLOR_RGB) continue; // non-RGB-bilder are ignored
+                    ImagePlus imp = new ImagePlus(file.getAbsolutePath());
+                    if (imp.getType() != ImagePlus.COLOR_RGB) continue; // non-RGB-bilder are ignored
 
-                // to manipulate the original image
-                this.ipp = imp.getProcessor();
+                    // to manipulate the original image
+                    this.ipp = imp.getProcessor();
 
-                ImageStack[] channels = splitRGB(imp.getStack(), true);
-                ImagePlus originalCH1 = new ImagePlus("originalCH1", channels[this.master_channel]);
-                ImagePlus originalCH2 = new ImagePlus("originalCH2", channels[this.second_channel]);
-                ImagePlus originalCH3 = new ImagePlus("originalCH3", channels[this.dapi_channel]);
+                    ImageStack[] channels = splitRGB(imp.getStack(), true);
+                    ImagePlus originalCH1 = new ImagePlus("originalCH1", channels[this.master_channel]);
+                    ImagePlus originalCH2 = new ImagePlus("originalCH2", channels[this.second_channel]);
+                    ImagePlus originalCH3 = new ImagePlus("originalCH3", channels[this.dapi_channel]);
 
-                this.ip1original = originalCH1.getProcessor();
-                this.ip2original = originalCH2.getProcessor();
-                this.ip3original = originalCH3.getProcessor();
+                    this.ip1original = originalCH1.getProcessor();
+                    this.ip2original = originalCH2.getProcessor();
+                    this.ip3original = originalCH3.getProcessor();
 
 
-                this.width = ip1original.getWidth();
-                this.height = ip1original.getHeight();
-                // 			  this.thisCellNumber = Integer.parseInt(imp.getShortTitle());
+                    this.width = ip1original.getWidth();
+                    this.height = ip1original.getHeight();
+                    // 			  this.thisCellNumber = Integer.parseInt(imp.getShortTitle());
 
-                ImagePlus TopHatTransformCH1 = originalCH1.duplicate();
-                ImagePlus TopHatTransformCH2 = originalCH2.duplicate();
+                    ImagePlus TopHatTransformCH1 = originalCH1.duplicate();
+                    ImagePlus TopHatTransformCH2 = originalCH2.duplicate();
 
-                this.ip1 = TopHatTransformCH1.getProcessor();
-                this.ip2 = TopHatTransformCH2.getProcessor();
+                    this.ip1 = TopHatTransformCH1.getProcessor();
+                    this.ip2 = TopHatTransformCH2.getProcessor();
 
-                ImageCalculator ic = new ImageCalculator();
-                morphological_opening(this.ip1, this.radius_structuring_element, "red");
-                TopHatTransformCH1 = ic.run("Subtract create", originalCH1, TopHatTransformCH1);
+                    ImageCalculator ic = new ImageCalculator();
+                    morphological_opening(this.ip1, this.radius_structuring_element, "red");
+                    TopHatTransformCH1 = ic.run("Subtract create", originalCH1, TopHatTransformCH1);
 
-                morphological_opening(this.ip2, this.radius_structuring_element, "green");
-                TopHatTransformCH2 = ic.run("Subtract create", originalCH2, TopHatTransformCH2);
+                    morphological_opening(this.ip2, this.radius_structuring_element, "green");
+                    TopHatTransformCH2 = ic.run("Subtract create", originalCH2, TopHatTransformCH2);
 
-                // update imageProcessors
-                this.ip1 = TopHatTransformCH1.getProcessor();
-                this.ip2 = TopHatTransformCH2.getProcessor();
+                    // update imageProcessors
+                    this.ip1 = TopHatTransformCH1.getProcessor();
+                    this.ip2 = TopHatTransformCH2.getProcessor();
 
-                // file_in_dir_counter counts for every dir/file +1 (starts at 0), but cellNumber only counts +1 if the cell is not a 'freak' (starts at 1)
-                this.file_in_dir_counter++; // in directory
-                this.total_cell_num_analyzed++; // total for all directory
-                calculate_mean_cell_intensity();
+                    // file_in_dir_counter counts for every dir/file +1 (starts at 0), but cellNumber only counts +1 if the cell is not a 'freak' (starts at 1)
+                    this.file_in_dir_counter++; // in directory
+                    this.total_cell_num_analyzed++; // total for all directory
+                    calculate_mean_cell_intensity();
 
-                // sometimes the edge values are quite high because of some artefacts from the top hat algorithm
-                for (int v = 0; v < this.width; v++) {
-                    for (int u = 0; u < this.height; u++) {
-                        if (this.ip3original.get(v, u) >= this.cell_thresh) {
-                            if (is_edge_pixel(v, u)) { //  && !isMax.get(v * this.height + u)
-                                this.ip1.set(v, u, this.ip1.get(v, u) / 3);
-                                this.ip2.set(v, u, this.ip2.get(v, u) / 3);
+                    // sometimes the edge values are quite high because of some artefacts from the top hat algorithm
+                    for (int v = 0; v < this.width; v++) {
+                        for (int u = 0; u < this.height; u++) {
+                            if (this.ip3original.get(v, u) >= this.cell_thresh) {
+                                if (is_edge_pixel(v, u)) { //  && !isMax.get(v * this.height + u)
+                                    this.ip1.set(v, u, this.ip1.get(v, u) / 3);
+                                    this.ip2.set(v, u, this.ip2.get(v, u) / 3);
+                                }
                             }
                         }
                     }
+                    // alternative: this uses the Sobel operator to find edges. 
+                    // if used, need to change radial_stDev() to convolution_value(), which just takes the value of ip1_convolution
+                    //              this.ip1_convolution = ip1original.duplicate();
+                    //              this.ip2_convolution = ip2original.duplicate();
+                    this.ip1_convolution = ip1.duplicate();
+                    this.ip2_convolution = ip2.duplicate();
+                    //              this.ip1_convolution.findEdges();
+                    //              this.ip2_convolution.findEdges();
+
+                    // alternative: laplace after gauss. needs to be calculated after the ipX edge correction above
+                    this.ip1_convolution.convolve(this.kernel, 5, 5);
+                    this.ip2_convolution.convolve(this.kernel, 5, 5);
+                    calculate_mean_cell_gradient();
+                    this.stDev_cell1 = this.cellMean1_gradient;
+                    this.stDev_cell2 = this.cellMean2_gradient;
+
+                    //starting the foci-detection with findObjects
+                    if (this.use_tophat_for_search) this.cellNumber += findObjects(this.ip1);
+                    else this.cellNumber += findObjects(this.ip1original);
+                } catch (Exception e) {
+//                     p("File name: " + this.image_name);
+                    StringWriter errors = new StringWriter();
+                    e.printStackTrace(new PrintWriter(errors));
+                    GreenJTextArea ta = new GreenJTextArea("Something went wrong while processing file " + this.image_name + ". \n\nError message:\n\n " + errors, 15, 50);
+                    ta.setWrapStyleWord(true);
+                    ta.setLineWrap(true);
+                    ta.setCaretPosition(0);
+                    ta.setEditable(false);
+                    JOptionPane.showMessageDialog(null, new JScrollPane(ta), "RESULT", JOptionPane.INFORMATION_MESSAGE);
                 }
-                // alternative: this uses the Sobel operator to find edges. 
-                // if used, need to change radial_stDev() to convolution_value(), which just takes the value of ip1_convolution
-                //              this.ip1_convolution = ip1original.duplicate();
-                //              this.ip2_convolution = ip2original.duplicate();
-                this.ip1_convolution = ip1.duplicate();
-                this.ip2_convolution = ip2.duplicate();
-                //              this.ip1_convolution.findEdges();
-                //              this.ip2_convolution.findEdges();
-
-                // alternative: laplace after gauss. needs to be calculated after the ipX edge correction above
-                this.ip1_convolution.convolve(this.kernel, 5, 5);
-                this.ip2_convolution.convolve(this.kernel, 5, 5);
-                calculate_mean_cell_gradient();
-                this.stDev_cell1 = this.cellMean1_gradient;
-                this.stDev_cell2 = this.cellMean2_gradient;
-
-                //starting the foci-detection with findObjects
-                if (this.use_tophat_for_search) this.cellNumber += findObjects(this.ip1);
-                else this.cellNumber += findObjects(this.ip1original);
             }
 
             if (this.total_cell_num_analyzed % (this.total_files_in_dir / 100 + 1) == 1 || this.total_cell_num_analyzed == this.total_cell_num) {
