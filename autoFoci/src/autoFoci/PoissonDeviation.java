@@ -3,7 +3,7 @@ package autoFoci;
 public class PoissonDeviation {
 
     int cell_number_interval = 500;
-    double foci_interval = 0.5;
+    double foci_interval = 0.2;
     
     // interval with 95% of all values over 100000 simulated distributions. values between 0.5 foci/cell and 2 foci per cell were simulated for cell numbers between 500 and 10000. 
     double[][] kl_div_95_arr =  {{0.01032, 0.00538, 0.00372, 0.00283, 0.00229, 0.00193, 0.00165, 0.00146, 0.0013, 0.00119, 0.00108, 0.00099, 0.00092, 0.00086, 0.0008, 0.00075, 0.00071, 0.00067, 0.00064, 0.00061}, {0.01286, 0.00672, 0.00459, 0.00347, 0.00281, 0.00237, 0.00204, 0.0018, 0.00161, 0.00146, 0.00133, 0.00123, 0.00114, 0.00106, 0.00099, 0.00093, 0.00088, 0.00083, 0.00079, 0.00075}, {0.01474, 0.00769, 0.0052, 0.00396, 0.00319, 0.00267, 0.00232, 0.00204, 0.00182, 0.00164, 0.0015, 0.00138, 0.00127, 0.00118, 0.00111, 0.00104, 0.00098, 0.00092, 0.00088, 0.00084}, {0.01625, 0.00839, 0.00566, 0.00429, 0.00346, 0.00291, 0.0025, 0.0022, 0.00195, 0.00177, 0.00161, 0.00148, 0.00137, 0.00128, 0.0012, 0.00113, 0.00106, 0.00101, 0.00096, 0.00091}};
@@ -13,14 +13,14 @@ public class PoissonDeviation {
     public String poisson_deviation_text(double foci, int cells, int cells_excluded, double pearson, double kl_divergence, double r_squares) {
         int i_foci = 0, i_cell_number = 0;
         double dist_sq_foci = -1, dist_sq_cell_number = -1;
-        for (int i=0; i<4; i++) {
+        for (int i=0; i<10; i++) {
             double f = (i + 1) * foci_interval;
             if (dist_sq_foci == -1 || (foci - f) * (foci - f) < dist_sq_foci) {
                 i_foci = i;
                 dist_sq_foci = (foci - f) * (foci - f);
             }
         }
-        for (int i=0; i<20; i++) {
+        for (int i=0; i<10; i++) {
             double c = (i + 1) * cell_number_interval;
             if (dist_sq_cell_number == -1 || (cells - c) * (cells - c) < dist_sq_cell_number) {
                 i_cell_number = i;

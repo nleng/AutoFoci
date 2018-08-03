@@ -623,7 +623,7 @@ public class MainFrame implements ActionListener {
         GridBagLayout gbl = new GridBagLayout();
         panel.setLayout(gbl);
 
-        button_images = new GreenJButton("Open cell image directory");
+        button_images = new GreenJButton("Open image directory");
         button_images.addActionListener(this);
         image_path_field = new GreenJTextField();
 
@@ -668,11 +668,10 @@ public class MainFrame implements ActionListener {
 
         GreenJTextPane histo_text = new GreenJTextPane("<html><p style='width: 500px; font-family: san-serif;'>This process will analyze all result files in the selected directory. " +
             "A histogram will be created for the object evaluation parameter (OEP) for each sample set. For more information about the method see Help->Info. <br>" +
-            "The threshold seperating true foci from background objects will be calculated automatically by multiple algorithms, but it can be changed manually by clicking onto the graph. <br><br>" +
+            "The threshold seperating true foci from background objects will be calculated automatically by multiple algorithms, but it can be changed manually by clicking onto the graph or is adjusted automatically during the validation process.<br>" + 
+            "The threshold validation images will show the master and second channels as defined in the first tab.<br>" + 
             "A table with the counted foci values will be saved inside the result file directory. Images of the approved/rejected histograms will be saved there as well. <br><br>" +
-            "The image directory can also be a directory with multiple subdirectory in case there are multiple result files to analyze.<br><br>" + 
-            "The threshold seperating true foci from background objects will be calculated automatically by multiple algorithms, but it can be changed manually by clicking onto the graph or is adjusted automatically during the validation process. " + 
-            "The threshold validation images will show the master and second channels as defined in the first tab.</p></html>");
+            "<b>The image directory can also be a directory with multiple subdirectories in case there are multiple result files to analyze.</b></p></html>"); 
 
         addComp(panel, gbl, histo_text, 2, 0, 2, 1, true, 1);
 
