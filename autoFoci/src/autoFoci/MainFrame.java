@@ -408,7 +408,7 @@ public class MainFrame implements ActionListener {
                         // if the analyze window is closed, find objects and mark foci
                         double oep_thresh = ad.oep_thresh;
                         // here we use oep from the original table
-                        double[] oep = ad.oep_all[3];
+                        double[] oep = ad.oep_arr[3];
                         // muss noch das save to table ausschalten
                         if (run_overlay_images) {
                             try {

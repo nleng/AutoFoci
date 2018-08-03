@@ -83,7 +83,7 @@ public class HistAnalyzer {
     NumberFormat int_format = NumberFormat.getIntegerInstance();
     int[] object_counter_arr;
     int[][] xy;
-    double[][] oep_all;
+    double[][] oep_arr;
     double[] oep, cell;
     double[] poisson_exp = new double[max_cell_foci];
     double[] poisson_theo = new double[max_cell_foci];
@@ -158,7 +158,7 @@ public class HistAnalyzer {
         return Math.log(Math.pow(red, red_power) * Math.pow(green, green_power));
     } // END focus_evaluation_parameter
 
-    public double[][] get_oep(String path, double oep_lim, boolean auto_limit, boolean full_output) {
+    public double[][] get_oep_arrays(String path, double oep_lim, boolean auto_limit, boolean full_output) {
         this.table_path = path;
         double[][] oep_out;
         ArrayList < Double[] > table_data = new ArrayList < Double[] > ();
@@ -918,7 +918,7 @@ public class HistAnalyzer {
     } // END create_overlay_stack
 
 
-    public void validate_threshold(String image_dir_path, double[][] oep_all, double[] oep, ArrayList < String > image_names, boolean skip_cells_with_many_foci, int max_foci, double median, double oep_thresh, int master_channel, int second_channel, int dapi_channel, int overlay_offset, double overlay_max_length, boolean use_overlay_toggle) {
+    public void validate_threshold(String image_dir_path, double[][] oep_arr, double[] oep, ArrayList < String > image_names, boolean skip_cells_with_many_foci, int max_foci, double median, double oep_thresh, int master_channel, int second_channel, int dapi_channel, int overlay_offset, double overlay_max_length, boolean use_overlay_toggle) {
         this.image_dir_path = image_dir_path;
         this.master_channel = master_channel;
         this.second_channel = second_channel;
@@ -926,7 +926,7 @@ public class HistAnalyzer {
         this.overlay_offset = overlay_offset;
         this.overlay_max_length = overlay_max_length;
         this.use_overlay_toggle = use_overlay_toggle;
-        this.oep_all = oep_all;
+        this.oep_arr = oep_arr;
         this.oep = oep;
         this.image_names = image_names;
         this.skip_cells_with_many_foci = skip_cells_with_many_foci;
@@ -941,9 +941,9 @@ public class HistAnalyzer {
         this.threshy_negative_max = this.oep_thresh;
         this.threshy_interval = 0.06 * oep_thresh;
 //         p("" + oep_thresh);
-//         p("" + oep_all[7][0]);
+//         p("" + oep_arr[7][0]);
 //         p("#--------------------#");
-        this.threshy_interval = 0.05 * (oep_all[7][0] - oep_thresh);
+        this.threshy_interval = 0.05 * (oep_arr[7][0] - oep_thresh);
         this.num_positive_values = 0;
         this.num_negative_values = 0;
         this.threshies = new ArrayList < > ();
@@ -1259,10 +1259,10 @@ public class HistAnalyzer {
                 return false;
         if (this.skip_cells_with_many_foci)
             for (int i = 0; i < this.threshies_3.length; i++)
-                this.foci_3[i] = count_foci_skip_cells(this.oep_all, this.threshies_3[i], this.max_foci)[1];
+                this.foci_3[i] = count_foci_skip_cells(this.oep_arr, this.threshies_3[i], this.max_foci)[1];
         else
             for (int i = 0; i < this.threshies_3.length; i++)
-                this.foci_3[i] = count_foci(this.oep_all, this.threshies_3[i])[1];
+                this.foci_3[i] = count_foci(this.oep_arr, this.threshies_3[i])[1];
         p("zzzzz " + Arrays.toString(this.foci_3));
         p(this.foci_3[1] + " FOCI " + (this.foci_3[0] + this.foci_3[2]) / 2.);
         this.uncertainty = (this.foci_3[0] - this.foci_3[2]) / 2.;
@@ -1437,9 +1437,9 @@ public class HistAnalyzer {
         });
         double[] foci;
         if (this.skip_cells_with_many_foci)
-            foci = count_foci_skip_cells(this.oep_all, this.oep_thresh, this.max_foci);
+            foci = count_foci_skip_cells(this.oep_arr, this.oep_thresh, this.max_foci);
         else
-            foci = count_foci(this.oep_all, this.oep_thresh);
+            foci = count_foci(this.oep_arr, this.oep_thresh);
         GreenJLabel label = new GreenJLabel("<html><p> Threshold validation successful. <br><br>Foci/cell: " + round_double(foci[1], 3) + " &plusmn; " + round_double(stDev(this.last_foci), 3) + " </p></html>");
         addComp(panel, gbl, label, 0, 0, 1, 1, true, true, 1);
         addComp(panel, gbl, button_done, 0, 1, 1, 1, true, true, 2);

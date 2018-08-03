@@ -322,11 +322,11 @@ public class HistPanel { //  extends JPanel
         this.combined_marker_lin.setValue(this.ana.oep_thresh);
 
         if (!this.ana.use_overlay_images && this.ana.skip_cells_with_many_foci)
-            this.ana.foci = this.histAna.count_foci_skip_cells(this.ana.oep_all, this.ana.oep_thresh, this.ana.max_foci);
+            this.ana.foci = this.histAna.count_foci_skip_cells(this.ana.oep_arr, this.ana.oep_thresh, this.ana.max_foci);
         else
-            this.ana.foci = this.histAna.count_foci(this.ana.oep_all, this.ana.oep_thresh);
+            this.ana.foci = this.histAna.count_foci(this.ana.oep_arr, this.ana.oep_thresh);
 
-        this.histAna.colocalization_pearson_difference(this.ana.oep_all, this.ana.oep_thresh);
+        this.histAna.colocalization_pearson_difference(this.ana.oep_arr, this.ana.oep_thresh);
 
         this.ana.combined_foci_title.setText("Foci/cell: " + String.valueOf(this.ana.foci[1]));
 
@@ -335,7 +335,7 @@ public class HistPanel { //  extends JPanel
 
     public void max_foci_changed() {
         this.ana.max_foci = ((Number) this.max_foci_field.getValue()).intValue();
-        this.ana.foci = this.histAna.count_foci_skip_cells(this.ana.oep_all, this.ana.oep_thresh, this.ana.max_foci);
+        this.ana.foci = this.histAna.count_foci_skip_cells(this.ana.oep_arr, this.ana.oep_thresh, this.ana.max_foci);
         // 	this.ana.combined_foci_title.setText("<html><p style='width: 120px; font-family: san-serif;'>Foci/cell: "+String.valueOf(this.ana.foci[1])+"</p></html>");
         this.ana.combined_foci_title.setText("Foci/cell: " + String.valueOf(this.ana.foci[1]));
     }
@@ -500,9 +500,9 @@ public class HistPanel { //  extends JPanel
         this.ana.oep_chart.revalidate(); // This removes the old chart
         this.ana.oep_chart.setLayout(new BorderLayout());
         if (log_scale)
-            this.ana.oep_chart.add(hist_panel(this.ana.oep_all[1], this.ana.oep_all[3], "", "Parameter 1/OEP", "OEP, linear with foci quality", "Frequency", stDev_value, range_value, threshy_list, true));
+            this.ana.oep_chart.add(hist_panel(this.ana.oep_arr[1], this.ana.oep_arr[3], "", "Parameter 1/OEP", "OEP, linear with foci quality", "Frequency", stDev_value, range_value, threshy_list, true));
         else
-            this.ana.oep_chart.add(hist_panel(this.ana.oep_all[1], this.ana.oep_all[3], "", "Parameter 1/OEP", "OEP, linear with foci quality", "Frequency", stDev_value, range_value, threshy_list, false));
+            this.ana.oep_chart.add(hist_panel(this.ana.oep_arr[1], this.ana.oep_arr[3], "", "Parameter 1/OEP", "OEP, linear with foci quality", "Frequency", stDev_value, range_value, threshy_list, false));
         this.ana.oep_chart.repaint();
 
     }

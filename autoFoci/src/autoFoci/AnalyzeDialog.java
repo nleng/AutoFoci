@@ -4,6 +4,7 @@ import autoFoci.HistPanel;
 import autoFoci.HistAnalyzer;
 import autoFoci.GreenGUI.*;
 import autoFoci.AutoThreshold;
+import autoFoci.PoissonDeviation;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class AnalyzeDialog {
     double[] oep;
     double[] cell;
     double[] foci;
-    double[][] oep_all;
+    double[][] oep_arr;
     double[] poisson_exp = new double[max_cell_foci];
     double[] poisson_theo = new double[max_cell_foci];
     // these 3 lists are needed for the back_button to work
@@ -168,13 +169,13 @@ public class AnalyzeDialog {
             }
             if (result_file.isFile()) {
                 try {
-                    this.oep_all = hista.get_oep(result_file.getAbsolutePath(), this.plot_limit, this.auto_limit, false);
+                    this.oep_arr = hista.get_oep_arrays(result_file.getAbsolutePath(), this.plot_limit, this.auto_limit, false);
                     if (this.debug) {
-                        System.out.println(this.oep_all.length);
-                        System.out.println(this.oep_all[0].length);
-                        System.out.println(this.oep_all[1].length);
+                        System.out.println(this.oep_arr.length);
+                        System.out.println(this.oep_arr[0].length);
+                        System.out.println(this.oep_arr[1].length);
                     }
-                    if (this.oep_all[1].length < 1) {
+                    if (this.oep_arr[1].length < 1) {
                         if (this.debug) {
                             System.out.println("length 0");
                             System.out.println(result_file);
@@ -183,7 +184,7 @@ public class AnalyzeDialog {
                         this.counter++;
                         continue;
                     }
-                    if (this.auto_limit) this.plot_limit = this.oep_all[4][0];
+                    if (this.auto_limit) this.plot_limit = this.oep_arr[4][0];
                     found = true;
                 } catch (Exception e) {
                     error_message(e);
@@ -223,15 +224,15 @@ public class AnalyzeDialog {
 
         double maxi = Double.NEGATIVE_INFINITY;
         double mini = Double.POSITIVE_INFINITY;
-        for (int i = 0; i < this.oep_all[take_oep].length; i++) {
-            if (this.oep_all[take_oep][i] > maxi)
-                maxi = this.oep_all[take_oep][i];
-            if (this.oep_all[take_oep][i] < mini)
-                mini = this.oep_all[take_oep][i];
+        for (int i = 0; i < this.oep_arr[take_oep].length; i++) {
+            if (this.oep_arr[take_oep][i] > maxi)
+                maxi = this.oep_arr[take_oep][i];
+            if (this.oep_arr[take_oep][i] < mini)
+                mini = this.oep_arr[take_oep][i];
         }
         int[] data = new int[(int) number_of_bins];
-        for (int i = 0; i < this.oep_all[take_oep].length; i++) {
-            int value = (int)((this.oep_all[take_oep][i] - mini) / (maxi - mini) * number_of_bins);
+        for (int i = 0; i < this.oep_arr[take_oep].length; i++) {
+            int value = (int)((this.oep_arr[take_oep][i] - mini) / (maxi - mini) * number_of_bins);
             if (value > number_of_bins - 1) value = (int) number_of_bins - 1;
             if (value >= 0) data[value]++;
         }
@@ -239,8 +240,8 @@ public class AnalyzeDialog {
         double[] iHisto = hista.smooth_histo(data, 10);
         double estimated_threshold = autoThreshy.MaxEntropy(iHisto) * (maxi - mini) / number_of_bins + mini;
         this.image_names = hista.read_imageNames(result_file.getAbsolutePath());
-        this.oep = this.oep_all[3];
-        this.cell = this.oep_all[2];
+        this.oep = this.oep_arr[3];
+        this.cell = this.oep_arr[2];
 
         maxi = Double.NEGATIVE_INFINITY;
         mini = Double.POSITIVE_INFINITY;
@@ -275,7 +276,7 @@ public class AnalyzeDialog {
         ArrayList < Double > threshy_list = new ArrayList < > ();
 
         double upper_bound = 2. * estimated_threshold;
-        double pearson_threshold = hista.colocalization_pearson_threshold(this.oep_all, max_position, upper_bound);
+        double pearson_threshold = hista.colocalization_pearson_threshold(this.oep_arr, max_position, upper_bound);
         threshy_list.add(pearson_threshold);
         ArrayList < Double > poisson_threshy_arr = hista.poisson_threshold(this.oep, this.cell, max_position, upper_bound);
         threshy_list.add(poisson_threshy_arr.get(1));
@@ -318,8 +319,8 @@ public class AnalyzeDialog {
 
         threshy_list.add(hista.f(autoThreshy.Triangle(iHisto) * (maxi - mini) / number_of_bins + mini));
 
-        double stDev_value = hista.hist_minimum_stdev(this.oep_all[1], this.plot_limit, this.stdev_of_num);
-        double range_value = hista.hist_minimum_range(this.oep_all[1], this.plot_limit, this.half_range_oep);
+        double stDev_value = hista.hist_minimum_stdev(this.oep_arr[1], this.plot_limit, this.stdev_of_num);
+        double range_value = hista.hist_minimum_range(this.oep_arr[1], this.plot_limit, this.half_range_oep);
         if (this.debug) {
             System.out.print("plot_limit\t");
             System.out.println(this.plot_limit);
@@ -333,7 +334,7 @@ public class AnalyzeDialog {
 
         if (new_thresh) this.oep_thresh = hista.mean(threshy_list);
 
-        this.oep_chart = this.oep_hist_panel.hist_panel(this.oep_all[1], this.oep, "", "1 / log(OEP)", "log(OEP)", "Frequency", stDev_value, range_value, threshy_list, true);
+        this.oep_chart = this.oep_hist_panel.hist_panel(this.oep_arr[1], this.oep, "", "1 / log(OEP)", "log(OEP)", "Frequency", stDev_value, range_value, threshy_list, true);
         this.oep_chart.setPreferredSize(new Dimension(900, 400));
 
 
@@ -342,7 +343,7 @@ public class AnalyzeDialog {
             public void actionPerformed(ActionEvent actionEvent) {
                 AnalyzeDialog.this.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 AnalyzeDialog.this.change_count = 0.;
-                hista.validate_threshold(AnalyzeDialog.this.image_dir_path, AnalyzeDialog.this.oep_all, AnalyzeDialog.this.oep, AnalyzeDialog.this.image_names, AnalyzeDialog.this.skip_cells_with_many_foci, AnalyzeDialog.this.max_foci, AnalyzeDialog.this.oep_all[5][0], AnalyzeDialog.this.oep_thresh, AnalyzeDialog.this.master_channel, AnalyzeDialog.this.second_channel, AnalyzeDialog.this.dapi_channel, overlay_offset, overlay_max_length, true);
+                hista.validate_threshold(AnalyzeDialog.this.image_dir_path, AnalyzeDialog.this.oep_arr, AnalyzeDialog.this.oep, AnalyzeDialog.this.image_names, AnalyzeDialog.this.skip_cells_with_many_foci, AnalyzeDialog.this.max_foci, AnalyzeDialog.this.oep_arr[5][0], AnalyzeDialog.this.oep_thresh, AnalyzeDialog.this.master_channel, AnalyzeDialog.this.second_channel, AnalyzeDialog.this.dapi_channel, overlay_offset, overlay_max_length, true);
                 // not really needed.
                 AnalyzeDialog.this.oep_hist_panel.threshold_field.setValue(hista.inverse(AnalyzeDialog.this.oep_thresh));
                 AnalyzeDialog.this.oep_hist_panel.set_x();
@@ -356,7 +357,7 @@ public class AnalyzeDialog {
 //             public void actionPerformed(ActionEvent actionEvent) {
 //                 AnalyzeDialog.this.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 //                 AnalyzeDialog.this.change_count = 0.;
-//                 hista.validate_threshold(AnalyzeDialog.this.image_dir_path, AnalyzeDialog.this.oep_all, AnalyzeDialog.this.oep, AnalyzeDialog.this.image_names, AnalyzeDialog.this.skip_cells_with_many_foci, AnalyzeDialog.this.max_foci, AnalyzeDialog.this.oep_all[5][0], AnalyzeDialog.this.oep_thresh, AnalyzeDialog.this.master_channel, AnalyzeDialog.this.second_channel, AnalyzeDialog.this.dapi_channel, overlay_offset, overlay_max_length, false);
+//                 hista.validate_threshold(AnalyzeDialog.this.image_dir_path, AnalyzeDialog.this.oep_arr, AnalyzeDialog.this.oep, AnalyzeDialog.this.image_names, AnalyzeDialog.this.skip_cells_with_many_foci, AnalyzeDialog.this.max_foci, AnalyzeDialog.this.oep_arr[5][0], AnalyzeDialog.this.oep_thresh, AnalyzeDialog.this.master_channel, AnalyzeDialog.this.second_channel, AnalyzeDialog.this.dapi_channel, overlay_offset, overlay_max_length, false);
 //                 // not really needed.
 //                 AnalyzeDialog.this.oep_hist_panel.threshold_field.setValue(hista.inverse(AnalyzeDialog.this.oep_thresh));
 //                 AnalyzeDialog.this.oep_hist_panel.set_x();
@@ -587,9 +588,9 @@ public class AnalyzeDialog {
         this.combined_foci_title = new GreenJTextField(8, false);
 
         if (this.skip_cells_with_many_foci)
-            this.foci = hista.count_foci_skip_cells(this.oep_all, this.oep_thresh, this.max_foci);
+            this.foci = hista.count_foci_skip_cells(this.oep_arr, this.oep_thresh, this.max_foci);
         else
-            this.foci = hista.count_foci(this.oep_all, this.oep_thresh);
+            this.foci = hista.count_foci(this.oep_arr, this.oep_thresh);
 
         this.combined_foci_title.setText("Foci/cell: " + String.valueOf(this.foci[1]));
         this.combined_foci_title.setFont(new Font("San Serif", Font.BOLD, 16));
@@ -722,7 +723,8 @@ public class AnalyzeDialog {
     } // END shuffle
 
     public void poisson_label_setText() {
-        this.poisson_label.setText("<html><p>Cells: " + Integer.toString((int) this.oep_all[2][this.oep_all[2].length - 1]) + " used, " + Integer.toString((int) this.oep_all[10][0]) + " excluded" + "<br>Colocalization (Pearson, &lt;0.4 bad): " + Double.toString(round_double(this.oep_all[9][0], 3)) + "<br><br>Difference to perfect Poisson:<br>KL-Divergence: " + Double.toString(this.kl_divergence) + " (ideally &lt;0.004)<br>Residual squares: " + Double.toString(this.r_squares) + " (ideally  &lt;9.0E-4)<br><br>(ideal values depend on the number of <br>foci and cells; here 2000 cells and 2 foci/cell)</p></html>");
+        PoissonDeviation pd = new PoissonDeviation();
+        this.poisson_label.setText(pd.poisson_deviation_text(this.foci[1], (int) this.oep_arr[2][this.oep_arr[2].length - 1], (int) this.oep_arr[10][0], round_double(this.oep_arr[9][0], 3), kl_divergence, r_squares));
     }
 
     public static double round_double(double x, int digits) {
