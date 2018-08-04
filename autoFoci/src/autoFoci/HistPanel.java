@@ -60,21 +60,21 @@ import org.jfree.chart.title.LegendTitle;
 
 public class HistPanel { //  extends JPanel
 
-    JFreeChart chart, chart_lin, chart_poisson;
+    JFreeChart chart, chart_log, chart_poisson;
 
-    private ChartPanel chartPanel, chartPanel_lin, chartPanel_poisson;
+    private ChartPanel chartPanel, chartPanel_log, chartPanel_poisson;
 
-    private Crosshair xCrosshair, xCrosshair_lin;
+    private Crosshair xCrosshair, xCrosshair_log;
 
-    private Crosshair yCrosshair, yCrosshair_lin;
+    private Crosshair yCrosshair, yCrosshair_log;
 
-    ValueMarker combined_marker, combined_marker_lin;
+    ValueMarker combined_marker, combined_marker_log;
 
     NumberFormat int_format = NumberFormat.getIntegerInstance();
     NumberFormat format_4_digits = NumberFormat.getNumberInstance();
 
     GreenJFormattedTextField threshold_field = new GreenJFormattedTextField(format_4_digits);
-    GreenJFormattedTextField threshold_field_lin = new GreenJFormattedTextField(format_4_digits);
+    GreenJFormattedTextField threshold_field_log = new GreenJFormattedTextField(format_4_digits);
     GreenJButton threshold_button = new GreenJButton("Set");
     GreenJFormattedTextField max_foci_field = new GreenJFormattedTextField(int_format);
     GreenJButton max_foci_button = new GreenJButton("Set");
@@ -88,17 +88,17 @@ public class HistPanel { //  extends JPanel
         this.ana = ana;
     }
 
-    public JPanel hist_panel(double[] hist_data, double[] hist_data_lin, String title, String xlabel, String xlabel_lin, String ylabel, double stDev_value, double range_value, ArrayList < Double > threshy_list, boolean log_scale) {
+    public JPanel hist_panel(double[] hist_data, double[] hist_data_log, String title, String xlabel, String xlabel_log, String ylabel, double stDev_value, double range_value, ArrayList < Double > threshy_list, boolean log_scale) {
 
         //         Color dark_white = new Color(150,150,150);
-        ArrayList < Double > hist_data_lin_cut_list = new ArrayList();
-        for (int i = 0; i < hist_data_lin.length; i++)
-            if (hist_data_lin[i] < 11000)
-                hist_data_lin_cut_list.add(hist_data_lin[i]);
-        double[] hist_data_lin_cut = new double[hist_data_lin_cut_list.size()];
-        for (int i = 0; i < hist_data_lin_cut_list.size(); i++)
-            hist_data_lin_cut[i] = hist_data_lin_cut_list.get(i);
-        create_histogram(hist_data, hist_data_lin_cut, title, xlabel, xlabel_lin, ylabel);
+        ArrayList < Double > hist_data_log_cut_list = new ArrayList();
+        for (int i = 0; i < hist_data_log.length; i++)
+            if (hist_data_log[i] < 11000)
+                hist_data_log_cut_list.add(hist_data_log[i]);
+        double[] hist_data_log_cut = new double[hist_data_log_cut_list.size()];
+        for (int i = 0; i < hist_data_log_cut_list.size(); i++)
+            hist_data_log_cut[i] = hist_data_log_cut_list.get(i);
+        create_histogram(hist_data, hist_data_log_cut, title, xlabel, xlabel_log, ylabel);
         this.format_4_digits.setMaximumFractionDigits(4);
         this.chartPanel = new ChartPanel(this.chart);
         // 			this.chartPanel.addChartMouseListener(this);
@@ -132,47 +132,47 @@ public class HistPanel { //  extends JPanel
         yAxis.setTickLabelPaint(GreenGUI.fg);
         yAxis.setLabelPaint(GreenGUI.fg);
 
-        // everythin for chartPanel_lin
-        this.chartPanel_lin = new ChartPanel(this.chart_lin);
-        CrosshairOverlay crosshairOverlay_lin = new CrosshairOverlay();
-        this.xCrosshair_lin = new Crosshair(Double.NaN, GreenGUI.fg.darker(), new BasicStroke(0f));
-        this.xCrosshair_lin.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-        this.xCrosshair_lin.setLabelVisible(true);
-        this.xCrosshair_lin.setLabelBackgroundPaint(GreenGUI.fg.darker());
-        this.yCrosshair_lin = new Crosshair(Double.NaN, GreenGUI.fg.darker(), new BasicStroke(0f));
-        this.yCrosshair_lin.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-        this.yCrosshair_lin.setLabelVisible(true);
-        this.yCrosshair_lin.setLabelBackgroundPaint(GreenGUI.fg.darker());
-        crosshairOverlay_lin.addDomainCrosshair(xCrosshair_lin);
-        crosshairOverlay_lin.addRangeCrosshair(yCrosshair_lin);
-        chartPanel_lin.addOverlay(crosshairOverlay_lin);
-        this.chart_lin.setBackgroundPaint(GreenGUI.bg);
+        // everythin for chartPanel_log
+        this.chartPanel_log = new ChartPanel(this.chart_log);
+        CrosshairOverlay crosshairOverlay_log = new CrosshairOverlay();
+        this.xCrosshair_log = new Crosshair(Double.NaN, GreenGUI.fg.darker(), new BasicStroke(0f));
+        this.xCrosshair_log.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+        this.xCrosshair_log.setLabelVisible(true);
+        this.xCrosshair_log.setLabelBackgroundPaint(GreenGUI.fg.darker());
+        this.yCrosshair_log = new Crosshair(Double.NaN, GreenGUI.fg.darker(), new BasicStroke(0f));
+        this.yCrosshair_log.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+        this.yCrosshair_log.setLabelVisible(true);
+        this.yCrosshair_log.setLabelBackgroundPaint(GreenGUI.fg.darker());
+        crosshairOverlay_log.addDomainCrosshair(xCrosshair_log);
+        crosshairOverlay_log.addRangeCrosshair(yCrosshair_log);
+        chartPanel_log.addOverlay(crosshairOverlay_log);
+        this.chart_log.setBackgroundPaint(GreenGUI.bg);
 
-        XYPlot xyPlot_lin = (XYPlot) this.chart_lin.getPlot();
-        xyPlot_lin.getRenderer().setSeriesStroke(0, new BasicStroke(3.0f));
-        xyPlot_lin.setBackgroundPaint(GreenGUI.bg);
+        XYPlot xyPlot_log = (XYPlot) this.chart_log.getPlot();
+        xyPlot_log.getRenderer().setSeriesStroke(0, new BasicStroke(3.0f));
+        xyPlot_log.setBackgroundPaint(GreenGUI.bg);
 
-        ValueAxis xAxis_lin = xyPlot_lin.getDomainAxis();
-        xAxis_lin.setAxisLinePaint(GreenGUI.fg);
-        xAxis_lin.setTickMarkPaint(GreenGUI.fg);
-        xAxis_lin.setTickLabelPaint(GreenGUI.fg);
-        xAxis_lin.setLabelPaint(GreenGUI.fg);
+        ValueAxis xAxis_log = xyPlot_log.getDomainAxis();
+        xAxis_log.setAxisLinePaint(GreenGUI.fg);
+        xAxis_log.setTickMarkPaint(GreenGUI.fg);
+        xAxis_log.setTickLabelPaint(GreenGUI.fg);
+        xAxis_log.setLabelPaint(GreenGUI.fg);
 
         if (log_scale) {
-            LogarithmicAxis yAxis_lin = new LogarithmicAxis("");
+            LogarithmicAxis yAxis_log = new LogarithmicAxis("");
             // if we use LogarithmicAxis, this is needed:
-            yAxis_lin.setAllowNegativesFlag(true);
-            yAxis_lin.setAxisLinePaint(GreenGUI.fg);
-            yAxis_lin.setTickMarkPaint(GreenGUI.fg);
-            yAxis_lin.setTickLabelPaint(GreenGUI.fg);
-            yAxis_lin.setLabelPaint(GreenGUI.fg);
-            xyPlot_lin.setRangeAxis(yAxis_lin);
+            yAxis_log.setAllowNegativesFlag(true);
+            yAxis_log.setAxisLinePaint(GreenGUI.fg);
+            yAxis_log.setTickMarkPaint(GreenGUI.fg);
+            yAxis_log.setTickLabelPaint(GreenGUI.fg);
+            yAxis_log.setLabelPaint(GreenGUI.fg);
+            xyPlot_log.setRangeAxis(yAxis_log);
         } else {
-            ValueAxis yAxis_lin = xyPlot_lin.getRangeAxis();
-            yAxis_lin.setAxisLinePaint(GreenGUI.fg);
-            yAxis_lin.setTickMarkPaint(GreenGUI.fg);
-            yAxis_lin.setTickLabelPaint(GreenGUI.fg);
-            yAxis_lin.setLabelPaint(GreenGUI.fg);
+            ValueAxis yAxis_log = xyPlot_log.getRangeAxis();
+            yAxis_log.setAxisLinePaint(GreenGUI.fg);
+            yAxis_log.setTickMarkPaint(GreenGUI.fg);
+            yAxis_log.setTickLabelPaint(GreenGUI.fg);
+            yAxis_log.setLabelPaint(GreenGUI.fg);
         }
 
 
@@ -187,7 +187,7 @@ public class HistPanel { //  extends JPanel
 
         String[] labels = {"Pearson", "Poisson", "MaxEnt", "RenyiEnt", "Yen", "Intermodes", "Triangle"};
         for (int i = 2; i < threshy_list.size(); i++)
-            vertical_marker(xyPlot_lin, threshy_list.get(i), yellow, labels[i], 37 + i * 16, new float[] {2.0f, 3.0f});
+            vertical_marker(xyPlot_log, threshy_list.get(i), yellow, labels[i], 37 + i * 16, new float[] {2.0f, 3.0f});
 
         Color red = new Color(170, 50, 20);
         this.combined_marker = new ValueMarker(this.histAna.inverse(this.ana.oep_thresh), red, new BasicStroke(2.0f));
@@ -199,20 +199,20 @@ public class HistPanel { //  extends JPanel
         this.combined_marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
         xyPlot.addDomainMarker(this.combined_marker);
 
-        this.combined_marker_lin = new ValueMarker(this.ana.oep_thresh, red, new BasicStroke(2.0f));
-        this.combined_marker_lin.setLabelFont(new Font("San Serif", Font.BOLD, 12));
-        this.combined_marker_lin.setLabelPaint(red);
-        this.combined_marker_lin.setLabel("selected");
-        this.combined_marker_lin.setLabelOffset(new RectangleInsets(21, 3, 3, 3));
-        this.combined_marker_lin.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-        this.combined_marker_lin.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-        xyPlot_lin.addDomainMarker(this.combined_marker_lin);
+        this.combined_marker_log = new ValueMarker(this.ana.oep_thresh, red, new BasicStroke(2.0f));
+        this.combined_marker_log.setLabelFont(new Font("San Serif", Font.BOLD, 12));
+        this.combined_marker_log.setLabelPaint(red);
+        this.combined_marker_log.setLabel("selected");
+        this.combined_marker_log.setLabelOffset(new RectangleInsets(21, 3, 3, 3));
+        this.combined_marker_log.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+        this.combined_marker_log.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+        xyPlot_log.addDomainMarker(this.combined_marker_log);
 
 
-        for (int i = 0; i < 2; i++) vertical_marker(xyPlot_lin, threshy_list.get(i), yellow, labels[i], 37 + i * 16, new float[] {2.0f, 3.0f});
+        for (int i = 0; i < 2; i++) vertical_marker(xyPlot_log, threshy_list.get(i), yellow, labels[i], 37 + i * 16, new float[] {2.0f, 3.0f});
         GreenJPanel both_charts = new GreenJPanel(new GridLayout(0, 2));
         both_charts.add(this.chartPanel);
-        both_charts.add(this.chartPanel_lin);
+        both_charts.add(this.chartPanel_log);
 
         this.chartPanel.addChartMouseListener(new ChartMouseListener() {
             public void chartMouseMoved(ChartMouseEvent event) {
@@ -234,15 +234,15 @@ public class HistPanel { //  extends JPanel
                 // if x<0 the panel resizes (?)
                 if (x > 0.) {
                     HistPanel.this.threshold_field.setValue(x);
-                    HistPanel.this.threshold_field_lin.setValue(HistPanel.this.histAna.inverse(x));
+                    HistPanel.this.threshold_field_log.setValue(HistPanel.this.histAna.inverse(x));
                     set_x();
                 }
             }
         });
 
-        this.chartPanel_lin.addChartMouseListener(new ChartMouseListener() {
+        this.chartPanel_log.addChartMouseListener(new ChartMouseListener() {
             public void chartMouseMoved(ChartMouseEvent event) {
-                Rectangle2D dataArea = HistPanel.this.chartPanel_lin.getScreenDataArea();
+                Rectangle2D dataArea = HistPanel.this.chartPanel_log.getScreenDataArea();
                 JFreeChart event_chart = event.getChart();
                 XYPlot plot = (XYPlot) event_chart.getPlot();
                 ValueAxis xAxis = plot.getDomainAxis();
@@ -251,7 +251,7 @@ public class HistPanel { //  extends JPanel
                 set_crosshair(x);
             }
             public void chartMouseClicked(ChartMouseEvent event) {
-                Rectangle2D dataArea = HistPanel.this.chartPanel_lin.getScreenDataArea();
+                Rectangle2D dataArea = HistPanel.this.chartPanel_log.getScreenDataArea();
                 JFreeChart event_chart = event.getChart();
                 XYPlot plot = (XYPlot) event_chart.getPlot();
                 ValueAxis xAxis = plot.getDomainAxis();
@@ -259,9 +259,8 @@ public class HistPanel { //  extends JPanel
                 // if x<0 the panel resizes, problem solved another way, so this is not needed
                 // 			if(x > 0.){
                 HistPanel.this.threshold_field.setValue(HistPanel.this.histAna.inverse(x));
-                HistPanel.this.threshold_field_lin.setValue(x);
+                HistPanel.this.threshold_field_log.setValue(x);
                 set_x();
-                // 			}
             }
         });
 
@@ -277,7 +276,7 @@ public class HistPanel { //  extends JPanel
             }
         });
 
-        this.threshold_field_lin.addActionListener(new ActionListener() {
+        this.threshold_field_log.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 set_x();
             }
@@ -312,14 +311,14 @@ public class HistPanel { //  extends JPanel
 
     public void set_x() {
         double new_thresh = ((Number) this.threshold_field.getValue()).doubleValue();
-        double new_thresh_lin = ((Number) this.threshold_field_lin.getValue()).doubleValue();
-        if (new_thresh_lin != this.ana.oep_thresh) {
-            this.ana.oep_thresh = new_thresh_lin;
+        double new_thresh_log = ((Number) this.threshold_field_log.getValue()).doubleValue();
+        if (new_thresh_log != this.ana.oep_thresh) {
+            this.ana.oep_thresh = new_thresh_log;
         } else {
             this.ana.oep_thresh = this.histAna.inverse(new_thresh);
         }
         this.combined_marker.setValue(this.histAna.inverse(this.ana.oep_thresh));
-        this.combined_marker_lin.setValue(this.ana.oep_thresh);
+        this.combined_marker_log.setValue(this.ana.oep_thresh);
 
         if (!this.ana.use_overlay_images && this.ana.skip_cells_with_many_foci)
             this.ana.foci = this.histAna.count_foci_skip_cells(this.ana.oep_arr, this.ana.oep_thresh, this.ana.max_foci);
@@ -331,6 +330,9 @@ public class HistPanel { //  extends JPanel
         this.ana.combined_foci_title.setText("Foci/cell: " + String.valueOf(this.ana.foci[1]));
 
         refresh_poisson_chart();
+        this.ana.frame.pack();  // IMPORANT! else there was a bug that sometimes the chart height would be very small. 
+        this.ana.frame.revalidate(); // This removes the old chart
+        this.ana.frame.repaint();
     }
 
     public void max_foci_changed() {
@@ -340,7 +342,7 @@ public class HistPanel { //  extends JPanel
         this.ana.combined_foci_title.setText("Foci/cell: " + String.valueOf(this.ana.foci[1]));
     }
 
-    public void create_histogram(double[] hist_data, double[] hist_data_lin, String title, String xlabel, String xlabel_lin, String ylabel) {
+    public void create_histogram(double[] hist_data, double[] hist_data_log, String title, String xlabel, String xlabel_log, String ylabel) {
         HistogramDataset dataset = new HistogramDataset();
         //       int bin = 100;
         int bin = 100;
@@ -366,29 +368,29 @@ public class HistPanel { //  extends JPanel
         // some padding bottom
         xyplot.setInsets(new RectangleInsets(3, 3, 25, 3));
 
-        // everything for the chart_lin
-        HistogramDataset dataset_lin = new HistogramDataset();
-        //       int bin_lin = 100;
-        int bin_lin = 85;
-        dataset_lin.addSeries("Hula", hist_data_lin, bin_lin);
+        // everything for the chart_log
+        HistogramDataset dataset_log = new HistogramDataset();
+        //       int bin_log = 100;
+        int bin_log = 85;
+        dataset_log.addSeries("Hula", hist_data_log, bin_log);
 
-        this.chart_lin = ChartFactory.createHistogram(title, xlabel_lin, ylabel, dataset_lin, PlotOrientation.VERTICAL, true, false, false);
+        this.chart_log = ChartFactory.createHistogram(title, xlabel_log, ylabel, dataset_log, PlotOrientation.VERTICAL, true, false, false);
         // don't need legend for histogram
-        this.chart_lin.removeLegend();
+        this.chart_log.removeLegend();
 
-        XYPlot xyplot_lin = (XYPlot) this.chart_lin.getPlot();
-        XYBarRenderer xybarrenderer_lin = (XYBarRenderer) xyplot_lin.getRenderer();
-        xybarrenderer_lin.setShadowVisible(false);
-        xybarrenderer_lin.setBarPainter(new StandardXYBarPainter());
+        XYPlot xyplot_log = (XYPlot) this.chart_log.getPlot();
+        XYBarRenderer xybarrenderer_log = (XYBarRenderer) xyplot_log.getRenderer();
+        xybarrenderer_log.setShadowVisible(false);
+        xybarrenderer_log.setBarPainter(new StandardXYBarPainter());
 
-        xybarrenderer_lin.setSeriesPaint(0, orange);
+        xybarrenderer_log.setSeriesPaint(0, orange);
 
-        xyplot_lin.setForegroundAlpha(0.7f);
-        xyplot_lin.setBackgroundPaint(GreenGUI.bg);
-        xyplot_lin.setDomainGridlinePaint(new Color(100, 100, 100));
-        xyplot_lin.setRangeGridlinePaint(new Color(100, 100, 100));
+        xyplot_log.setForegroundAlpha(0.7f);
+        xyplot_log.setBackgroundPaint(GreenGUI.bg);
+        xyplot_log.setDomainGridlinePaint(new Color(100, 100, 100));
+        xyplot_log.setRangeGridlinePaint(new Color(100, 100, 100));
         // some padding bottom
-        xyplot_lin.setInsets(new RectangleInsets(3, 3, 25, 3));
+        xyplot_log.setInsets(new RectangleInsets(3, 3, 25, 3));
 
     }
 
@@ -399,10 +401,10 @@ public class HistPanel { //  extends JPanel
         this.yCrosshair.setValue((int) y); // since we are in a histogram
 
         x = this.histAna.inverse(x);
-        plot = (XYPlot) this.chart_lin.getPlot();
+        plot = (XYPlot) this.chart_log.getPlot();
         y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
-        this.xCrosshair_lin.setValue(x);
-        this.yCrosshair_lin.setValue((int) y); // since we are in a histogram
+        this.xCrosshair_log.setValue(x);
+        this.yCrosshair_log.setValue((int) y); // since we are in a histogram
     }
     private IntervalXYDataset createDataset(double[] poisson_exp, double[] poisson_theo) {
         final XYSeries series = new XYSeries("Experiment");

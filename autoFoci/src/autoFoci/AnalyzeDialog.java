@@ -337,7 +337,6 @@ public class AnalyzeDialog {
         this.oep_chart = this.oep_hist_panel.hist_panel(this.oep_arr[1], this.oep, "", "1 / log(OEP)", "log(OEP)", "Frequency", stDev_value, range_value, threshy_list, true);
         this.oep_chart.setPreferredSize(new Dimension(900, 400));
 
-
         GreenJButton validate_button_1 = new GreenJButton("Threshold validation");
         validate_button_1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -408,7 +407,7 @@ public class AnalyzeDialog {
                     }
                     MultiType output = new MultiType();
                     output.name = AnalyzeDialog.this.dir_name;
-                    AnalyzeDialog.this.oep_thresh = ((Number) AnalyzeDialog.this.oep_hist_panel.threshold_field_lin.getValue()).doubleValue();
+                    AnalyzeDialog.this.oep_thresh = ((Number) AnalyzeDialog.this.oep_hist_panel.threshold_field_log.getValue()).doubleValue();
                     output.oep_thresh = hista.round_double(AnalyzeDialog.this.oep_thresh, 3);
                     output.foci = AnalyzeDialog.this.foci[0];
                     output.foci_cell = AnalyzeDialog.this.foci[1];
@@ -551,9 +550,9 @@ public class AnalyzeDialog {
 
         addComp(oep_textfield_panel, gbl, this.oep_hist_panel.threshold_button, 2, 0, 1, 1, true, 1);
 
-        this.oep_hist_panel.threshold_field_lin.setFont(new Font("San Serif", Font.PLAIN, 16));
-        addComp(oep_textfield_panel, gbl, this.oep_hist_panel.threshold_field_lin, 3, 0, 1, 1, true, 1);
-        this.oep_hist_panel.threshold_field_lin.setValue(this.oep_thresh);
+        this.oep_hist_panel.threshold_field_log.setFont(new Font("San Serif", Font.PLAIN, 16));
+        addComp(oep_textfield_panel, gbl, this.oep_hist_panel.threshold_field_log, 3, 0, 1, 1, true, 1);
+        this.oep_hist_panel.threshold_field_log.setValue(this.oep_thresh);
 
 
         JToggleButton toggle_log_button = new JToggleButton("Log scale", true);

@@ -225,9 +225,9 @@ public class HistAnalyzer {
             oep_out[4][0] = oep_out[0][lim]; // to set the value of plot_limit_field
             int lim_median = (int)(0.5 * oep_out[3].length);
             // copying the array because the original array should still work with the cell num array
-            double[] oep_lin_sorted = Arrays.copyOf(oep_out[3], oep_out[3].length);
-            Arrays.sort(oep_lin_sorted);
-            double median = oep_lin_sorted[lim_median];
+            double[] oep_log_sorted = Arrays.copyOf(oep_out[3], oep_out[3].length);
+            Arrays.sort(oep_log_sorted);
+            double median = oep_log_sorted[lim_median];
             oep_out[5][0] = median; // store the median of the log parameter (not bothering special cases)
             p("-----------------------------------------");
             System.out.print("median: ");
@@ -235,8 +235,8 @@ public class HistAnalyzer {
             // calculate the mean of the X biggest foci:
             int number_of_biggest = (int)(0.025 * this.cell_number);
             double biggest_mean = 0.;
-            for (int i = oep_lin_sorted.length - number_of_biggest; i < oep_lin_sorted.length; i++) {
-                biggest_mean += oep_lin_sorted[i];
+            for (int i = oep_log_sorted.length - number_of_biggest; i < oep_log_sorted.length; i++) {
+                biggest_mean += oep_log_sorted[i];
             }
             biggest_mean /= number_of_biggest;
             oep_out[7][0] = biggest_mean;
@@ -1327,7 +1327,7 @@ public class HistAnalyzer {
         this.validate_frame.dispose();
         this.ana.oep_thresh = this.oep_thresh;
         this.ana.oep_hist_panel.threshold_field.setValue(inverse(this.ana.oep_thresh));
-        this.ana.oep_hist_panel.threshold_field_lin.setValue(this.ana.oep_thresh);
+        this.ana.oep_hist_panel.threshold_field_log.setValue(this.ana.oep_thresh);
         this.ana.oep_hist_panel.set_x();
 
         validate_threshold();
@@ -1343,7 +1343,7 @@ public class HistAnalyzer {
 
         this.ana.oep_thresh = this.oep_thresh;
         this.ana.oep_hist_panel.threshold_field.setValue(inverse(this.ana.oep_thresh));
-        this.ana.oep_hist_panel.threshold_field_lin.setValue(this.ana.oep_thresh);
+        this.ana.oep_hist_panel.threshold_field_log.setValue(this.ana.oep_thresh);
         this.ana.oep_hist_panel.set_x();
 
         this.check_positive_frame = new JFrame();
@@ -1413,7 +1413,7 @@ public class HistAnalyzer {
         this.oep_thresh = mean(this.last_threshies);
         this.ana.oep_thresh = this.oep_thresh;
         this.ana.oep_hist_panel.threshold_field.setValue(inverse(this.ana.oep_thresh));
-        this.ana.oep_hist_panel.threshold_field_lin.setValue(this.ana.oep_thresh);
+        this.ana.oep_hist_panel.threshold_field_log.setValue(this.ana.oep_thresh);
         this.ana.oep_hist_panel.set_x();
 
         this.check_positive_frame = new JFrame();
