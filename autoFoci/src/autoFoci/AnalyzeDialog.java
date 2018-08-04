@@ -55,7 +55,7 @@ public class AnalyzeDialog {
 
     String image_root_path, image_dir_path, dir_name;
 
-    boolean use_overlay_images, done = false, blind, skip_cells_with_many_foci = false, auto_limit = true;
+    boolean use_overlay_images, done = false, blind, use_minimum_algorithms, skip_cells_with_many_foci = false, auto_limit = true;
     int counter, stdev_of_num = 500, minArea, master_channel, second_channel, dapi_channel, max_foci, result_files_total, overlay_offset, max_objects;
     double oep_thresh, change_count, kl_divergence, r_squares, overlay_max_length;
     // double master_weight;
@@ -77,7 +77,7 @@ public class AnalyzeDialog {
     // MultiType is a class with mixed types
     ArrayList < MultiType > output_table = new ArrayList < MultiType > ();
 
-    public AnalyzeDialog(int stdev_of_num, double half_range_oep, boolean use_overlay_images, int minArea, int master_channel, int second_channel, int dapi_channel, boolean blind, boolean skip_cells_with_many_foci, int max_foci, int overlay_offset, double overlay_max_length) {
+    public AnalyzeDialog(int stdev_of_num, double half_range_oep, boolean use_overlay_images, int minArea, int master_channel, int second_channel, int dapi_channel, boolean blind, boolean use_minimum_algorithms, boolean skip_cells_with_many_foci, int max_foci, int overlay_offset, double overlay_max_length) {
         this.stdev_of_num = stdev_of_num;
         this.half_range_oep = half_range_oep;
         this.minArea = minArea;
@@ -89,6 +89,7 @@ public class AnalyzeDialog {
 
         this.use_overlay_images = use_overlay_images;
         this.blind = blind;
+        this.use_minimum_algorithms = use_minimum_algorithms;
         this.skip_cells_with_many_foci = skip_cells_with_many_foci;
         this.max_foci = max_foci;
     }
@@ -315,7 +316,7 @@ public class AnalyzeDialog {
 
         // no smoothing here
         iHisto = hista.smooth_histo(data, 0);
-        System.out.println("x: " + mini + " " + maxi + " " + autoThreshy.Triangle(iHisto));
+//         System.out.println("x: " + mini + " " + maxi + " " + autoThreshy.Triangle(iHisto));
 
         threshy_list.add(hista.f(autoThreshy.Triangle(iHisto) * (maxi - mini) / number_of_bins + mini));
 
@@ -331,10 +332,14 @@ public class AnalyzeDialog {
             System.out.println("threshy_list");
             System.out.println(threshy_list);
         }
-
+    
+        if (this.use_minimum_algorithms) {
+            threshy_list.add(hista.inverse(stDev_value));
+            threshy_list.add(hista.inverse(range_value));
+        }
         if (new_thresh) this.oep_thresh = hista.mean(threshy_list);
 
-        this.oep_chart = this.oep_hist_panel.hist_panel(this.oep_arr[1], this.oep, "", "1 / log(OEP)", "log(OEP)", "Frequency", stDev_value, range_value, threshy_list, true);
+        this.oep_chart = this.oep_hist_panel.hist_panel(this.oep_arr[1], this.oep, "", "1 / log(OEP)", "log(OEP)", "Frequency", stDev_value, range_value, threshy_list, true, this.use_minimum_algorithms);
         this.oep_chart.setPreferredSize(new Dimension(900, 400));
 
         GreenJButton validate_button_1 = new GreenJButton("Threshold validation");

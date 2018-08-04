@@ -88,7 +88,7 @@ public class HistPanel { //  extends JPanel
         this.ana = ana;
     }
 
-    public JPanel hist_panel(double[] hist_data, double[] hist_data_log, String title, String xlabel, String xlabel_log, String ylabel, double stDev_value, double range_value, ArrayList < Double > threshy_list, boolean log_scale) {
+    public JPanel hist_panel(double[] hist_data, double[] hist_data_log, String title, String xlabel, String xlabel_log, String ylabel, double stDev_value, double range_value, ArrayList < Double > threshy_list, boolean log_scale, boolean use_minimum_algorithms) {
 
         //         Color dark_white = new Color(150,150,150);
         ArrayList < Double > hist_data_log_cut_list = new ArrayList();
@@ -186,8 +186,9 @@ public class HistPanel { //  extends JPanel
         vertical_marker(xyPlot, range_value, yellow, "range", 37 + 16, new float[] {10.0f, 8.0f});
 
         String[] labels = {"Pearson", "Poisson", "MaxEnt", "RenyiEnt", "Yen", "Intermodes", "Triangle"};
-        for (int i = 2; i < threshy_list.size(); i++)
-            vertical_marker(xyPlot_log, threshy_list.get(i), yellow, labels[i], 37 + i * 16, new float[] {2.0f, 3.0f});
+        int less = 0;
+        if (use_minimum_algorithms) less = 2;
+        for (int i = 2; i < threshy_list.size()-less; i++) vertical_marker(xyPlot_log, threshy_list.get(i), yellow, labels[i], 37 + i * 16, new float[] {2.0f, 3.0f});
 
         Color red = new Color(170, 50, 20);
         this.combined_marker = new ValueMarker(this.histAna.inverse(this.ana.oep_thresh), red, new BasicStroke(2.0f));
@@ -502,9 +503,9 @@ public class HistPanel { //  extends JPanel
         this.ana.oep_chart.revalidate(); // This removes the old chart
         this.ana.oep_chart.setLayout(new BorderLayout());
         if (log_scale)
-            this.ana.oep_chart.add(hist_panel(this.ana.oep_arr[1], this.ana.oep_arr[3], "", "Parameter 1/OEP", "OEP, linear with foci quality", "Frequency", stDev_value, range_value, threshy_list, true));
+            this.ana.oep_chart.add(hist_panel(this.ana.oep_arr[1], this.ana.oep_arr[3], "", "Parameter 1/OEP", "OEP, linear with foci quality", "Frequency", stDev_value, range_value, threshy_list, true, this.ana.use_minimum_algorithms));
         else
-            this.ana.oep_chart.add(hist_panel(this.ana.oep_arr[1], this.ana.oep_arr[3], "", "Parameter 1/OEP", "OEP, linear with foci quality", "Frequency", stDev_value, range_value, threshy_list, false));
+            this.ana.oep_chart.add(hist_panel(this.ana.oep_arr[1], this.ana.oep_arr[3], "", "Parameter 1/OEP", "OEP, linear with foci quality", "Frequency", stDev_value, range_value, threshy_list, false, this.ana.use_minimum_algorithms));
         this.ana.oep_chart.repaint();
 
     }

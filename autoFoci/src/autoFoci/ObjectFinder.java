@@ -89,9 +89,9 @@ public class ObjectFinder {
     BitSet isObj, isObj_saturated;
 
     boolean minimum_output, rename_freaks;
-    int width, height, cell_area, minThresh_above_cell_mean, added_counter, curr_min_pos, area = 0, visitedCounter = 0, gCounter, cellFoci, file_in_dir_counter = 0, cellNumber = 1, master_channel, second_channel, dapi_channel, maxCH1, maxCH2, maxCH1Transform, maxCH2Transform, minSeparation, minArea, total_cell_num, total_cell_num_analyzed = 0, total_files_in_dir = 0, max1X, max1Y, max2X, max2Y, objectCounter, maxArea_radius, freak_threshold, freak_low_threshold, freak_stdev_threshold, freak_counter_low = 0, freak_counter_high = 0, freak_counter_stdev = 0;
+    int width, height, cell_area, added_counter, curr_min_pos, area = 0, visitedCounter = 0, gCounter, cellFoci, file_in_dir_counter = 0, cellNumber = 1, master_channel, second_channel, dapi_channel, maxCH1, maxCH2, maxCH1Transform, maxCH2Transform, minSeparation, minArea, total_cell_num, total_cell_num_analyzed = 0, total_files_in_dir = 0, max1X, max1Y, max2X, max2Y, objectCounter, maxArea_radius, freak_threshold, freak_low_threshold, freak_stdev_threshold, freak_counter_low = 0, freak_counter_high = 0, freak_counter_stdev = 0;
     int[] maxPixels1, maxPixels2, maxPixels1Transform, maxPixels2Transform, thresholds_satisfied_arr_1, thresholds_satisfied_arr_2, thresholds_satisfied_arr_all;
-    double minThresh, cell_max1, cell_max2, foci, oep_thresh, oep, stDev_max1, stDev_max2, radius_structuring_element, edgeThreshold, maxDiff, topPixels1, topPixels2, topPixels1Transform, topPixels2Transform, cell_sum1, cell_sum2, cell_sum_squares1, cell_sum_squares2, cellMean1, cellMean2, cellMean1_gradient, cellMean2_gradient, BGlocalSumCH1, BGlocalSumCH2, BGlocalCH1, BGlocalCH2, meanSum1, meanSum2, mean1, mean2, fociPerCell, fociPerCellAME, normDiff, treshForAll, ameTresh, areaBig = 45., stDev_cell1, stDev_cell2, pearson_correlation, pearson_correlation_object, moment_of_inertia_1, moment_of_inertia_2;
+    double minThresh, minRelativeIntensity, cell_max1, cell_max2, foci, oep_thresh, oep, stDev_max1, stDev_max2, radius_structuring_element, edgeThreshold, maxDiff, topPixels1, topPixels2, topPixels1Transform, topPixels2Transform, cell_sum1, cell_sum2, cell_sum_squares1, cell_sum_squares2, cellMean1, cellMean2, cellMean1_gradient, cellMean2_gradient, BGlocalSumCH1, BGlocalSumCH2, BGlocalCH1, BGlocalCH2, meanSum1, meanSum2, mean1, mean2, fociPerCell, fociPerCellAME, normDiff, treshForAll, ameTresh, areaBig = 45., stDev_cell1, stDev_cell2, pearson_correlation, pearson_correlation_object, moment_of_inertia_1, moment_of_inertia_2;
     double[] stDev_max_pixels_1, stDev_max_pixels_2;
     double[] oep_arr_1, oep_arr_2, oep_arr_multi;
 
@@ -121,7 +121,7 @@ public class ObjectFinder {
     ProgressFrame progress_gui = new ProgressFrame();
 
 
-    public ObjectFinder(MainFrame main_frame_tmp, String root_path_tmp, String result_dir_tmp, String extension_tmp, int master_channel_tmp, int second_channel_tmp, int dapi_channel_tmp, int freak_threshold_tmp, int freak_low_threshold_tmp, int freak_stdev_threshold_tmp, double radius_structuring_element_tmp, double edgeThreshold_tmp, int minArea_tmp, int minSeparation_tmp, int minThresh_above_cell_mean_tmp, double oep_thresh, boolean rename_freaks_tmp) {
+    public ObjectFinder(MainFrame main_frame_tmp, String root_path_tmp, String result_dir_tmp, String extension_tmp, int master_channel_tmp, int second_channel_tmp, int dapi_channel_tmp, int freak_threshold_tmp, int freak_low_threshold_tmp, int freak_stdev_threshold_tmp, double radius_structuring_element_tmp, double edgeThreshold_tmp, int minArea_tmp, int minSeparation_tmp, double minRelativeIntensity_tmp, double oep_thresh, boolean rename_freaks_tmp) {
 
         this.main_frame = main_frame_tmp;
         this.root_path = root_path_tmp;
@@ -140,7 +140,7 @@ public class ObjectFinder {
         if (this.minArea < 1) this.minArea = 1;
         this.maxArea_radius = 2 * minSeparation_tmp;
         this.minSeparation = minSeparation_tmp;
-        this.minThresh_above_cell_mean = minThresh_above_cell_mean_tmp;
+        this.minRelativeIntensity = minRelativeIntensity_tmp;
         this.oep_thresh = oep_thresh;
         this.rename_freaks = rename_freaks_tmp;
     } // END set_params
@@ -574,7 +574,7 @@ public class ObjectFinder {
         this.reserved_for = new int[this.width][this.height];
         this.remove_max = new ArrayList < > ();
         this.add_max = new ArrayList < > ();
-        this.minThresh = this.cellMean1 + this.minThresh_above_cell_mean;
+        this.minThresh = this.minRelativeIntensity * this.cellMean1;
         if (use_tophat_for_search) this.minThresh = 0.;  // in case we use top-hat transformation for object search the local background is already subtracted. 
         isObj_saturated = new BitSet(width * height);
         isObj = new BitSet(width * height);
@@ -584,18 +584,15 @@ public class ObjectFinder {
         // don't count 'freaks' or wrong images
         if (this.cell_area == 0 || this.cellMean1 < this.freak_low_threshold || this.cellMean2 < this.freak_low_threshold) {
             this.freak_counter_low++;
-            if (this.rename_freaks)
-                rename_freak("low");
+            if (this.rename_freaks) rename_freak("low");
             return 0;
         } else if (this.cellMean1 > this.freak_threshold || this.cellMean2 > this.freak_threshold) {
             this.freak_counter_high++;
-            if (this.rename_freaks)
-                rename_freak("high");
+            if (this.rename_freaks) rename_freak("high");
             return 0;
         } else if (this.stDev_cell1 < this.freak_stdev_threshold || this.stDev_cell2 < this.freak_stdev_threshold) {
             this.freak_counter_stdev++;
-            if (this.rename_freaks)
-                rename_freak("std");
+            if (this.rename_freaks) rename_freak("std");
             return 0;
         }
 

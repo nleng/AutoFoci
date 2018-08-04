@@ -36,8 +36,8 @@ public class MainFrame implements ActionListener {
     JMenuItem open_menu_item, save_menu_item, restore_default_menu_item, exit_menu_item, info_menu_item, license_menu_item;
     GreenJButton button_open, button_open_images, button_images, button_start, button_start_images, button_start_overlay, button_overlay_save, button_open_images_overlay, button_open_file_overlay;
     GreenJTextField root_path_field, root_path_field_images, image_path_field, extension_field, result_dir_field, image_path_overlay_field, root_path_overlay_file_field;
-    GreenJFormattedTextField stdev_of_num_field, range_oep_field, master_channel_field, second_channel_field, dapi_channel_field, struct_dia_field, minThresh_normal_field, minThresh_1Gy_field, edgeThreshold_field, minArea_field, maxArea_field, minSeparation_field, minThresh_above_cell_mean_field, overlay_offset_field, overlay_max_length_field, max_foci_field, freak_threshold_field, freak_low_threshold_field, freak_stdev_threshold_field;
-    GreenJCheckBox minimum_output_checkbox, only_show_master_and_second_channel_checkbox, blind_overlay_checkbox, only_cells_with_objects_checkbox, blind_checkbox, skip_cells_with_many_foci_checkbox, rename_freaks_checkbox;
+    GreenJFormattedTextField stdev_of_num_field, range_oep_field, master_channel_field, second_channel_field, dapi_channel_field, struct_dia_field, edgeThreshold_field, minArea_field, maxArea_field, minSeparation_field, minRelativeIntensity_field, overlay_offset_field, overlay_max_length_field, max_foci_field, freak_threshold_field, freak_low_threshold_field, freak_stdev_threshold_field;
+    GreenJCheckBox minimum_output_checkbox, only_show_master_and_second_channel_checkbox, blind_overlay_checkbox, only_cells_with_objects_checkbox, blind_checkbox, use_minimum_algorithms_checkbox, skip_cells_with_many_foci_checkbox, rename_freaks_checkbox;
     final String foci_table_name = "00foci_table.csv";  // if changed, also search for "foci_table" in AnalyzeDialog. 
     final String foci_table_name_backup = "00foci_table_old.csv";
     final String result_dir = "00result_tables";
@@ -211,6 +211,7 @@ public class MainFrame implements ActionListener {
                     final int stdev_of_num = ((Number) stdev_of_num_field.getValue()).intValue();
                     final double half_range_oep = ((Number) range_oep_field.getValue()).doubleValue() / 2.;
                     final boolean blind = blind_checkbox.isSelected();
+                    final boolean use_minimum_algorithms = use_minimum_algorithms_checkbox.isSelected();
                     final int master_channel = ((Number) master_channel_field.getValue()).intValue() - 1;
                     final int second_channel = ((Number) second_channel_field.getValue()).intValue() - 1;
                     final int dapi_channel = ((Number) dapi_channel_field.getValue()).intValue() - 1;
@@ -243,7 +244,7 @@ public class MainFrame implements ActionListener {
                         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
-                    AnalyzeDialog ad = new AnalyzeDialog(stdev_of_num, half_range_oep, use_overlay_images, minArea, master_channel, second_channel, dapi_channel, blind, skip_cells_with_many_foci, max_foci, overlay_offset, overlay_max_length);
+                    AnalyzeDialog ad = new AnalyzeDialog(stdev_of_num, half_range_oep, use_overlay_images, minArea, master_channel, second_channel, dapi_channel, blind, use_minimum_algorithms, skip_cells_with_many_foci, max_foci, overlay_offset, overlay_max_length);
                     try {
                         main_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
@@ -283,7 +284,7 @@ public class MainFrame implements ActionListener {
                     final double edgeThreshold = ((Number) edgeThreshold_field.getValue()).doubleValue();
                     final int minArea = ((Number) minArea_field.getValue()).intValue();
                     final int minSeparation = ((Number) minSeparation_field.getValue()).intValue();
-                    final int minThresh_above_cell = ((Number) minThresh_above_cell_mean_field.getValue()).intValue();
+                    final double minRelativeIntensity = ((Number) minRelativeIntensity_field.getValue()).doubleValue();
 
                     final boolean use_overlay_images = false;
                     final boolean rename_freaks = rename_freaks_checkbox.isSelected();
@@ -302,7 +303,7 @@ public class MainFrame implements ActionListener {
                     }
 
                     try {
-                        ObjectFinder of = new ObjectFinder(MainFrame.this, root_path_images, result_dir, extension, master_channel, second_channel, dapi_channel, freak_threshold, freak_low_threshold, freak_stdev_threshold, radStructEle, edgeThreshold, minArea, minSeparation, minThresh_above_cell, oep_thresh, rename_freaks);
+                        ObjectFinder of = new ObjectFinder(MainFrame.this, root_path_images, result_dir, extension, master_channel, second_channel, dapi_channel, freak_threshold, freak_low_threshold, freak_stdev_threshold, radStructEle, edgeThreshold, minArea, minSeparation, minRelativeIntensity, oep_thresh, rename_freaks);
                         boolean success = of .run();
                         if (!success) {
                             GreenJTextPane message = new GreenJTextPane("<html><p>No images with file extension " + extension + " were found in the specified location. <br>" + 
@@ -337,7 +338,7 @@ public class MainFrame implements ActionListener {
                     final double edgeThreshold = ((Number) edgeThreshold_field.getValue()).doubleValue();
                     final int minArea = ((Number) minArea_field.getValue()).intValue();
                     final int minSeparation = ((Number) minSeparation_field.getValue()).intValue();
-                    final int minThresh_above_cell = ((Number) minThresh_above_cell_mean_field.getValue()).intValue();
+//                     final double minRelativeIntensity = ((Number) minRelativeIntensity_field.getValue()).doubleValue();
                     final int overlay_offset = ((Number) overlay_offset_field.getValue()).intValue();
                     final double overlay_max_length = ((Number) overlay_max_length_field.getValue()).doubleValue();
 
@@ -347,6 +348,7 @@ public class MainFrame implements ActionListener {
                     final int stdev_of_num = ((Number) stdev_of_num_field.getValue()).intValue();
                     final double half_range_oep = ((Number) range_oep_field.getValue()).doubleValue() / 2.;
                     final boolean blind = blind_checkbox.isSelected();
+                    final boolean use_minimum_algorithms = use_minimum_algorithms_checkbox.isSelected();
                     
                     final boolean skip_cells_with_many_foci = skip_cells_with_many_foci_checkbox.isSelected();
                     final int max_foci = ((Number) max_foci_field.getValue()).intValue();
@@ -378,7 +380,7 @@ public class MainFrame implements ActionListener {
                         return;
                     }
 
-                    AnalyzeDialog ad = new AnalyzeDialog(stdev_of_num, half_range_oep, use_overlay_images, minArea, master_channel, second_channel, dapi_channel, blind, skip_cells_with_many_foci, max_foci, overlay_offset, overlay_max_length);
+                    AnalyzeDialog ad = new AnalyzeDialog(stdev_of_num, half_range_oep, use_overlay_images, minArea, master_channel, second_channel, dapi_channel, blind, use_minimum_algorithms, skip_cells_with_many_foci, max_foci, overlay_offset, overlay_max_length);
                     try {
                         main_frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
@@ -597,9 +599,9 @@ public class MainFrame implements ActionListener {
         minArea_field = new GreenJFormattedTextField(int_format);
         addComp(sub_panel, gbl_sub, minArea_field, 1, 2, 1, 1, true, 1);
 
-        addComp(sub_panel, gbl_sub, new GreenJLabel("<html>Minimum intensity above nucleus mean<html>"), 0, 4, 1, 1, true, 1);
-        minThresh_above_cell_mean_field = new GreenJFormattedTextField(double_format);
-        addComp(sub_panel, gbl_sub, minThresh_above_cell_mean_field, 1, 4, 1, 1, true, 1);
+        addComp(sub_panel, gbl_sub, new GreenJLabel("<html>Minimum intensity (realtive to nuclear mean)<html>"), 0, 4, 1, 1, true, 1);
+        minRelativeIntensity_field = new GreenJFormattedTextField(double_format);
+        addComp(sub_panel, gbl_sub, minRelativeIntensity_field, 1, 4, 1, 1, true, 1);
 
         addComp(sub_panel, gbl_sub, new GreenJLabel("<html>Diameter of structuring element (>= focus diameter) for tophat <br>transformation, which is applied before variance calculation<html>"), 0, 5, 1, 1, true, 1);
         struct_dia_field = new GreenJFormattedTextField(double_format);
@@ -646,14 +648,17 @@ public class MainFrame implements ActionListener {
         NumberFormat double_format = NumberFormat.getNumberInstance();
         double_format.setGroupingUsed(false);
         double_format.setMaximumFractionDigits(5);
+        
+        use_minimum_algorithms_checkbox = new GreenJCheckBox("Include minimum algorithms for estimated threshold");
+        addComp(subpanel_oep, gbl_oep, use_minimum_algorithms_checkbox, 0, 0, 2, 1, true, 1);
 
-        addComp(subpanel_oep, gbl_oep, new GreenJLabel("Interval for the 'range-algorithm'"), 0, 0, 1, 1, true, 1);
+        addComp(subpanel_oep, gbl_oep, new GreenJLabel("Interval for the 'range-algorithm'"), 0, 1, 1, 1, true, 1);
         range_oep_field = new GreenJFormattedTextField(double_format);
-        addComp(subpanel_oep, gbl_oep, range_oep_field, 1, 0, 1, 1, true, 1);
+        addComp(subpanel_oep, gbl_oep, range_oep_field, 1, 1, 1, 1, true, 1);
 
-        addComp(subpanel_oep, gbl_oep, new GreenJLabel("<html><p>Number of adjacent objects used to calculate the<br> standard deviation in the 'stDev-algorithm'</p></html>"), 0, 1, 1, 1, true, 1);
+        addComp(subpanel_oep, gbl_oep, new GreenJLabel("<html><p>Number of adjacent objects used to calculate the<br> standard deviation in the 'stDev-algorithm'</p></html>"), 0, 2, 1, 1, true, 1);
         stdev_of_num_field = new GreenJFormattedTextField(int_format);
-        addComp(subpanel_oep, gbl_oep, stdev_of_num_field, 1, 1, 1, 1, true, 1);
+        addComp(subpanel_oep, gbl_oep, stdev_of_num_field, 1, 2, 1, 1, true, 1);
 
         Border border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(GreenGUI.fg.darker()), "Minimum algorithm parameters", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, GreenGUI.font, GreenGUI.fg);
         subpanel_oep.setBorder(border);
@@ -792,13 +797,14 @@ public class MainFrame implements ActionListener {
         defaultProps.setProperty("edgeThreshold_field", "0.5");
         defaultProps.setProperty("minArea_field", "3");
         defaultProps.setProperty("minSeparation_field", "3");
-        defaultProps.setProperty("minThresh_above_cell_mean_field", "1");
+        defaultProps.setProperty("minRelativeIntensity_field", "1.1");
 
         defaultProps.setProperty("root_path_field", ""); // System.getProperty("user.dir")
         defaultProps.setProperty("image_path_field", System.getProperty("user.dir"));
         defaultProps.setProperty("stdev_of_num_field", "400");
         defaultProps.setProperty("range_oep_field", "0.02");
         defaultProps.setProperty("blind_checkbox", "true");
+        defaultProps.setProperty("use_minimum_algorithms_checkbox", "true");
         defaultProps.setProperty("skip_cells_with_many_foci_checkbox", "true");
         defaultProps.setProperty("max_foci_field", "10");
 
@@ -833,13 +839,14 @@ public class MainFrame implements ActionListener {
         edgeThreshold_field.setValue(Double.parseDouble(configProps.getProperty("edgeThreshold_field")));
         minArea_field.setValue(Integer.parseInt(configProps.getProperty("minArea_field")));
         minSeparation_field.setValue(Integer.parseInt(configProps.getProperty("minSeparation_field")));
-        minThresh_above_cell_mean_field.setValue(Integer.parseInt(configProps.getProperty("minThresh_above_cell_mean_field")));
+        minRelativeIntensity_field.setValue(Double.parseDouble(configProps.getProperty("minRelativeIntensity_field")));
 
         root_path_field.setText(configProps.getProperty("root_path_field"));
         image_path_field.setText(configProps.getProperty("image_path_field"));
         stdev_of_num_field.setValue(Integer.parseInt(configProps.getProperty("stdev_of_num_field")));
         range_oep_field.setValue(Double.parseDouble(configProps.getProperty("range_oep_field")));
         blind_checkbox.setSelected(Boolean.parseBoolean(configProps.getProperty("blind_checkbox")));
+        use_minimum_algorithms_checkbox.setSelected(Boolean.parseBoolean(configProps.getProperty("use_minimum_algorithms_checkbox")));
         skip_cells_with_many_foci_checkbox.setSelected(Boolean.parseBoolean(configProps.getProperty("skip_cells_with_many_foci_checkbox")));
         max_foci_field.setValue(Integer.parseInt(configProps.getProperty("max_foci_field")));
 
@@ -872,13 +879,14 @@ public class MainFrame implements ActionListener {
         configProps.setProperty("edgeThreshold_field", String.valueOf(((Number) edgeThreshold_field.getValue()).doubleValue()));
         configProps.setProperty("minArea_field", String.valueOf(((Number) minArea_field.getValue()).intValue()));
         configProps.setProperty("minSeparation_field", String.valueOf(((Number) minSeparation_field.getValue()).intValue()));
-        configProps.setProperty("minThresh_above_cell_mean_field", String.valueOf(((Number) minThresh_above_cell_mean_field.getValue()).intValue()));
+        configProps.setProperty("minRelativeIntensity_field", String.valueOf(((Number) minRelativeIntensity_field.getValue()).doubleValue()));
 
         configProps.setProperty("root_path_field", root_path_field.getText());
         configProps.setProperty("image_path_field", image_path_field.getText());
         configProps.setProperty("stdev_of_num_field", String.valueOf(((Number) stdev_of_num_field.getValue()).intValue()));
         configProps.setProperty("range_oep_field", String.valueOf(((Number) range_oep_field.getValue()).doubleValue()));
         configProps.setProperty("blind_checkbox", Boolean.toString(blind_checkbox.isSelected()));
+        configProps.setProperty("use_minimum_algorithms_checkbox", Boolean.toString(use_minimum_algorithms_checkbox.isSelected()));
         configProps.setProperty("skip_cells_with_many_foci_checkbox", Boolean.toString(skip_cells_with_many_foci_checkbox.isSelected()));
         configProps.setProperty("max_foci_field", String.valueOf(((Number) max_foci_field.getValue()).intValue()));
 
