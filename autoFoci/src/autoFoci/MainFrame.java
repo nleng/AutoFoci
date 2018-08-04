@@ -599,7 +599,7 @@ public class MainFrame implements ActionListener {
         minArea_field = new GreenJFormattedTextField(int_format);
         addComp(sub_panel, gbl_sub, minArea_field, 1, 2, 1, 1, true, 1);
 
-        addComp(sub_panel, gbl_sub, new GreenJLabel("<html>Minimum intensity (realtive to nuclear mean)<html>"), 0, 4, 1, 1, true, 1);
+        addComp(sub_panel, gbl_sub, new GreenJLabel("<html>Minimum intensity (relative to nuclear mean)<html>"), 0, 4, 1, 1, true, 1);
         minRelativeIntensity_field = new GreenJFormattedTextField(double_format);
         addComp(sub_panel, gbl_sub, minRelativeIntensity_field, 1, 4, 1, 1, true, 1);
 
