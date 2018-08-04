@@ -6,4 +6,6 @@ http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.h
 
 Then please download the [autoFoci.jar](autoFoci/autoFoci.jar?raw=true) file and execute it. 
 
+You can find a short guide to perform an analysis with demo data here...??
+
 The ImageJ version used within autoFoci is not compatible with Java 9, but we are working on support for it. 
