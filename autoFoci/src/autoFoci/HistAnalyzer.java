@@ -1656,7 +1656,7 @@ public class HistAnalyzer {
         //         return oep_cell_out;
     }
 
-    // minimum = plnace where the standard deviation is maximal, because the distribution is flat
+    // minimum = place where the standard deviation is maximal, because the distribution is flat
     public double hist_minimum_stdev(double[] arr, double upper_limit, int stdev_of_num) {
         // for example a single cell with no big objects
         if (arr.length <= 1) return 0.;
@@ -1667,7 +1667,7 @@ public class HistAnalyzer {
         ArrayList < Double > y_out = new ArrayList < Double > ();
         Arrays.sort(arr);
         for (int i = 0; i < arr.length - stdev_of_num; i++) {
-            if (arr[i] < max_thresh) { // arr[i] > min_thresh && , does not need min_thresh since it starts at the first object value
+            if (arr[i] < max_thresh) { // arr[i] > min_thresh && , does not need min_thresh since it starts at the first object value. 
                 double[] slice = Arrays.copyOfRange(arr, i, i + stdev_of_num);
                 x_out.add(mean(slice));
                 y_out.add(stDev(slice));

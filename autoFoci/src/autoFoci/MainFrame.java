@@ -652,13 +652,13 @@ public class MainFrame implements ActionListener {
         use_minimum_algorithms_checkbox = new GreenJCheckBox("Include minimum algorithms for estimated threshold");
         addComp(subpanel_oep, gbl_oep, use_minimum_algorithms_checkbox, 0, 0, 2, 1, true, 1);
 
-        addComp(subpanel_oep, gbl_oep, new GreenJLabel("Interval for the 'range-algorithm'"), 0, 1, 1, 1, true, 1);
-        range_oep_field = new GreenJFormattedTextField(double_format);
-        addComp(subpanel_oep, gbl_oep, range_oep_field, 1, 1, 1, 1, true, 1);
-
-        addComp(subpanel_oep, gbl_oep, new GreenJLabel("<html><p>Number of adjacent objects used to calculate the<br> standard deviation in the 'stDev-algorithm'</p></html>"), 0, 2, 1, 1, true, 1);
+        addComp(subpanel_oep, gbl_oep, new GreenJLabel("<html><p>Number of adjacent objects used to calculate the<br> standard deviation in the 'STD method'</p></html>"), 0, 1, 1, 1, true, 1);
         stdev_of_num_field = new GreenJFormattedTextField(int_format);
-        addComp(subpanel_oep, gbl_oep, stdev_of_num_field, 1, 2, 1, 1, true, 1);
+        addComp(subpanel_oep, gbl_oep, stdev_of_num_field, 1, 1, 1, 1, true, 1);
+
+        addComp(subpanel_oep, gbl_oep, new GreenJLabel("Interval for the 'range method'"), 0, 2, 1, 1, true, 1);
+        range_oep_field = new GreenJFormattedTextField(double_format);
+        addComp(subpanel_oep, gbl_oep, range_oep_field, 1, 2, 1, 1, true, 1);
 
         Border border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(GreenGUI.fg.darker()), "Minimum algorithm parameters", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, GreenGUI.font, GreenGUI.fg);
         subpanel_oep.setBorder(border);
