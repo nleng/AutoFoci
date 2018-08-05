@@ -14,8 +14,7 @@ All files needed for this step are included in the [ImageJ](ImageJ) folder. Plea
 
 ## 2. Foci counting with autoFoci
 
-To use autoFoci please make sure that Java 8 is installed on your operating system:
-http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+To use autoFoci please make sure that [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) is installed on your operating system.
 
 Then please download the [autoFoci.jar](autoFoci/autoFoci.jar?raw=true) file and execute it. 
 
