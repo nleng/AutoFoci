@@ -2,7 +2,7 @@
 Automated foci counting software especially designed for a high-throughput object detection in single cell images.. Analysed images were obtained by immunofluorescence microscopy using a double labelling approach with two well established DNA double-strand break (DSB) markers, γH2AX and 53BP1 to visualize DSBs as so-called foci after the exposure of cells to low radiation doses.
 This repository contains all files needed to perform both, the image processing to generate  single cell images as well as the subsequent counting of foci with AutoFoci.
 
-You can download the complete repository as a zip file via [this link](archive/master.zip). 
+You can download the complete repository as a zip file via [this link](https://github.com/nleng/autoFoci/archive/master.zip). 
 
 ## 1. Generation of single cell images
 
