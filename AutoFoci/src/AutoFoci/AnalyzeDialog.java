@@ -1,10 +1,10 @@
-package autoFoci;
-import autoFoci.MultiType;
-import autoFoci.HistPanel;
-import autoFoci.HistAnalyzer;
-import autoFoci.GreenGUI.*;
-import autoFoci.AutoThreshold;
-import autoFoci.PoissonDeviation;
+package AutoFoci;
+import AutoFoci.MultiType;
+import AutoFoci.HistPanel;
+import AutoFoci.HistAnalyzer;
+import AutoFoci.GreenGUI.*;
+import AutoFoci.AutoThreshold;
+import AutoFoci.PoissonDeviation;
 
 import java.io.File;
 import java.io.IOException;
@@ -777,7 +777,7 @@ public class AnalyzeDialog {
     private void error_message(Exception e) {
         StringWriter errors = new StringWriter();
         e.printStackTrace(new PrintWriter(errors));
-        GreenJTextArea ta = new GreenJTextArea("Something went wrong. Please check all file paths and that (if any used) the .csv files are result files (not foci tables) created by autoFoci. \n\nError message:\n\n " + errors, 15, 50);
+        GreenJTextArea ta = new GreenJTextArea("Something went wrong. Please check all file paths and that (if any used) the .csv files are result files (not foci tables) created by AutoFoci. \n\nError message:\n\n " + errors, 15, 50);
         ta.setWrapStyleWord(true);
         ta.setLineWrap(true);
         ta.setCaretPosition(0);

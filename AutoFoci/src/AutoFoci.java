@@ -1,7 +1,7 @@
 
-import autoFoci.MainFrame;
+import AutoFoci.MainFrame;
  
-public class autoFoci {
+public class AutoFoci {
     public static void main(String[] args) {
 
         MainFrame dialog = new MainFrame();

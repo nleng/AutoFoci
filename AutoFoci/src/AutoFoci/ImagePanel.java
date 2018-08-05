@@ -1,4 +1,4 @@
-package autoFoci;
+package AutoFoci;
 
 import java.awt.Graphics;
 import java.awt.Image;

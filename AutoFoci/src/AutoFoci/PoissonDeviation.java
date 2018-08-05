@@ -1,6 +1,6 @@
-package autoFoci;
+package AutoFoci;
 
-import autoFoci.HistAnalyzer;
+import AutoFoci.HistAnalyzer;
 
 public class PoissonDeviation {
 

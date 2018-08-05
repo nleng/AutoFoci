@@ -1,11 +1,11 @@
-package autoFoci;
+package AutoFoci;
 
-import autoFoci.AnalyzeDialog;
-import autoFoci.ProgressFrame;
-import autoFoci.MainFrame;
-import autoFoci.MultiType;
-import autoFoci.GreenGUI.*;
-import autoFoci.AutoThreshold;
+import AutoFoci.AnalyzeDialog;
+import AutoFoci.ProgressFrame;
+import AutoFoci.MainFrame;
+import AutoFoci.MultiType;
+import AutoFoci.GreenGUI.*;
+import AutoFoci.AutoThreshold;
 
 import java.io.*;
 import java.util.List;
@@ -2112,7 +2112,7 @@ public class HistAnalyzer {
     private void error_message(Exception e) {
         StringWriter errors = new StringWriter();
         e.printStackTrace(new PrintWriter(errors));
-        GreenJTextArea ta = new GreenJTextArea("Something went wrong. Please check all file paths and that (if any used) the .csv files are result files (not foci tables) created by autoFoci. \n\nError message:\n\n " + errors, 15, 50);
+        GreenJTextArea ta = new GreenJTextArea("Something went wrong. Please check all file paths and that (if any used) the .csv files are result files (not foci tables) created by AutoFoci. \n\nError message:\n\n " + errors, 15, 50);
         ta.setWrapStyleWord(true);
         ta.setLineWrap(true);
         ta.setCaretPosition(0);

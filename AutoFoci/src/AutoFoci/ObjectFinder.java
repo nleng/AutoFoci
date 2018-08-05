@@ -1,36 +1,18 @@
 /**
 
-edgeThreshold gar nicht benutzt gerade!?!?!?!?!
-
-ich sollte PrintStream ersetzen durch:
-Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"));
-writer.close();
-siehe:
-http://stackoverflow.com/questions/4614227/how-to-add-a-new-line-of-text-to-an-existing-file-in-java
-
-right now minThresh = 0 ! but this only affects the search for maxima, not the area. 
-area is influenced by edgeThreshold, eThresh, and cellMean.
-
-autoFoci implements an automatic foci counting method, which is applicable for large numbers of nuclei images.
-author: Nicor Lengert (nicorlengert@gmx.de)
-
-1. the image is processed by use of top-hat transformation to filter foci (< structuring element) from background.
-2. via threshold (red and green channel), which depends on the total cell intensity of the individual cell, seeds are setup.
-3. these seeds are used for a region growing algorithm. its boundaries are defined by an edge threshold (only red channel)
-
-reasons for an object not to be identified:
-green topPixels < cellMean2
-area < minArea
+AutoFoci implements an automatic foci counting method, which is applicable for large numbers of single cell images.
+author: Nicor Lengert (nicorlengert@gmail.com)
 
 **/
 
-package autoFoci;
+package AutoFoci;
 
-import autoFoci.ResultType;
-import autoFoci.ProgressFrame;
-import autoFoci.MainFrame;
-import autoFoci.HistAnalyzer;
-import autoFoci.AutoThreshold;
+import AutoFoci.ResultType;
+import AutoFoci.ProgressFrame;
+import AutoFoci.MainFrame;
+import AutoFoci.HistAnalyzer;
+import AutoFoci.AutoThreshold;
+import AutoFoci.GreenGUI.GreenJTextArea;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -48,7 +30,6 @@ import java.awt.Font;
 import java.awt.BorderLayout;
 import java.awt.Container;
 
-import autoFoci.GreenGUI.GreenJTextArea;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -1171,6 +1152,10 @@ public class ObjectFinder {
 
 
     public void save_results(String filename) {
+        // maybe replace with:
+        // Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"));
+        // writer.close();
+        // http://stackoverflow.com/questions/4614227/how-to-add-a-new-line-of-text-to-an-existing-file-in-java
 
         PrintStream ps;
         try {

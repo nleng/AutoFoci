@@ -1,4 +1,4 @@
-package autoFoci;
+package AutoFoci;
 import java.util.List;
 import java.util.ArrayList;
 

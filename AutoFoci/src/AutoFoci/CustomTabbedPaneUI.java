@@ -1,4 +1,4 @@
-package autoFoci;
+package AutoFoci;
 
 import java.util.*;
 import java.awt.*;

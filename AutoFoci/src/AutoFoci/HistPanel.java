@@ -1,8 +1,8 @@
-package autoFoci;
+package AutoFoci;
 
-import autoFoci.AnalyzeDialog;
-import autoFoci.HistAnalyzer;
-import autoFoci.GreenGUI.*;
+import AutoFoci.AnalyzeDialog;
+import AutoFoci.HistAnalyzer;
+import AutoFoci.GreenGUI.*;
 
 import java.io.File;
 import java.io.IOException;

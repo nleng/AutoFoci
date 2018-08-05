@@ -1,11 +1,11 @@
-package autoFoci;
+package AutoFoci;
 
-import autoFoci.ObjectFinder;
-import autoFoci.HistAnalyzer;
-import autoFoci.AnalyzeDialog;
-import autoFoci.ImagePanel;
-import autoFoci.GreenGUI.*;
-import autoFoci.CustomTabbedPaneUI;
+import AutoFoci.ObjectFinder;
+import AutoFoci.HistAnalyzer;
+import AutoFoci.AnalyzeDialog;
+import AutoFoci.ImagePanel;
+import AutoFoci.GreenGUI.*;
+import AutoFoci.CustomTabbedPaneUI;
 
 import java.io.*;
 import java.awt.*;
@@ -25,7 +25,7 @@ import java.util.Properties;
 
 
 public class MainFrame implements ActionListener {
-    File last_config_file = new File("autoFoci_last_config.txt");
+    File last_config_file = new File("AutoFoci_last_config.txt");
     Properties configProps;
 
     Image icon = new ImageIcon(this.getClass().getResource("/images/zelle1.png")).getImage();
@@ -126,11 +126,11 @@ public class MainFrame implements ActionListener {
                 "- A top-hat transformation as well as a local curvature transformation are calculated. Various object properties, like mean and maximum top-hat intensity, are stored in result files.<br>" +
                 "- These object properties are combined into one object evaluation parameter (OEP), which correlates well with by eye focus evaluation.<br>" +
                 "- With a short manual intervention an OEP threshold can be validated afterwards. <br><br>" +
-                "For more information please visit: https://github.com/nleng/autoFoci</p></html>");
+                "For more information please visit: https://github.com/nleng/AutoFoci</p></html>");
 
             JOptionPane.showMessageDialog(null, info, "Info", JOptionPane.INFORMATION_MESSAGE);
         } else if (object.getSource() == license_menu_item) {
-            GreenJTextPane license = new GreenJTextPane("<html><p style='text-align: center; font-family: san-serif;'>Author: Nicor Lengert <br><br>autoFoci license: GNU General Public License v3.0 <br><br> Lincense from used libraries: <br><br> ImageJ: Simplified BSD License<br>Website: <a href=\"https://github.com/imagej/imagej\">https://github.com/imagej/imagej</a><br><br> JFreeChart: GNU Lesser General Public Licence (LGPL)<br>Website: <a href=\"http://www.jfree.org/jfreechart/\">http://www.jfree.org/jfreechart/</a></p></html>");
+            GreenJTextPane license = new GreenJTextPane("<html><p style='text-align: center; font-family: san-serif;'>Author: Nicor Lengert <br><br>AutoFoci license: GNU General Public License v3.0 <br><br> Lincense from used libraries: <br><br> ImageJ: Simplified BSD License<br>Website: <a href=\"https://github.com/imagej/imagej\">https://github.com/imagej/imagej</a><br><br> JFreeChart: GNU Lesser General Public Licence (LGPL)<br>Website: <a href=\"http://www.jfree.org/jfreechart/\">http://www.jfree.org/jfreechart/</a></p></html>");
             license.addHyperlinkListener(new HyperlinkListener() {
                 @Override
                 public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -267,7 +267,7 @@ public class MainFrame implements ActionListener {
             Thread thread = new Thread(run_AnalyzeDialog);
             thread.start();
         } else if (object.getSource() == button_start_images) {
-            Runnable run_autoFoci = new Runnable() {
+            Runnable run_AutoFoci = new Runnable() {
                 public void run() {
                     final String root_path_images = root_path_field_images.getText();
                     String extension = extension_field.getText();
@@ -318,10 +318,10 @@ public class MainFrame implements ActionListener {
                 }
             };
 
-            Thread thread = new Thread(run_autoFoci);
+            Thread thread = new Thread(run_AutoFoci);
             thread.start();
         } else if (object.getSource() == button_start_overlay) {
-            Runnable run_autoFoci = new Runnable() {
+            Runnable run_AutoFoci = new Runnable() {
                 public void run() {
 
                     final boolean use_overlay_images = true;
@@ -429,7 +429,7 @@ public class MainFrame implements ActionListener {
 
                 }
             };
-            Thread thread = new Thread(run_autoFoci);
+            Thread thread = new Thread(run_AutoFoci);
             thread.start();
             // 	    thread.join();
         }
@@ -462,7 +462,7 @@ public class MainFrame implements ActionListener {
         UIManager.put("OptionPane.yesButtonText", "Yes");
 
         this.main_frame = new JFrame();
-        this.main_frame.setTitle("autoFoci");
+        this.main_frame.setTitle("AutoFoci");
         //     this.main_frame.setResizable(false); // else the images are buggy
         this.main_frame.getContentPane().setBackground(GreenGUI.fg);
         this.main_frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // DISPOSE_ON_CLOSE only closes the window, EXIT_ON_CLOSE will exit application, DO_NOTHING_ON_CLOSE does nothing
@@ -916,7 +916,7 @@ public class MainFrame implements ActionListener {
     private void error_message(Exception e) {
         StringWriter errors = new StringWriter();
         e.printStackTrace(new PrintWriter(errors));
-        GreenJTextArea ta = new GreenJTextArea("Something went wrong. Please check all file paths and that (if any used) the .csv files are result files (not foci tables) created by autoFoci. \n\nError message:\n\n " + errors, 15, 50);
+        GreenJTextArea ta = new GreenJTextArea("Something went wrong. Please check all file paths and that (if any used) the .csv files are result files (not foci tables) created by AutoFoci. \n\nError message:\n\n " + errors, 15, 50);
         ta.setWrapStyleWord(true);
         ta.setLineWrap(true);
         ta.setCaretPosition(0);

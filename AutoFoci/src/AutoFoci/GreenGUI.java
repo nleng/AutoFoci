@@ -1,9 +1,4 @@
-package autoFoci;
-
-import autoFoci.ObjectFinder;
-import autoFoci.HistAnalyzer;
-import autoFoci.AnalyzeDialog;
-import autoFoci.ImagePanel;
+package AutoFoci;
 
 import java.io.*;
 import java.awt.*;

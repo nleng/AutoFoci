@@ -1,7 +1,7 @@
-package autoFoci;
+package AutoFoci;
 
-import autoFoci.MainFrame;
-import autoFoci.GreenGUI.*;
+import AutoFoci.MainFrame;
+import AutoFoci.GreenGUI.*;
 
 import java.io.*;
 import java.awt.*;

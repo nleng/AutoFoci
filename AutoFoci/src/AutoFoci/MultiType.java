@@ -1,4 +1,4 @@
-package autoFoci;
+package AutoFoci;
 
 
 public class MultiType {
