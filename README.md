@@ -5,12 +5,12 @@ This repository contains all files needed to perform both, the generation of sin
 
 You can download the complete repository as a zip file via [this link](archive/master.zip). 
 
-1. Generation of single cell images
+## 1. Generation of single cell images
 
 All files needed for this step are included in the [ImageJ](ImageJ) folder. Please follow the instructions in the PDF guide(link??). 
  
 
-2. Foci counting with autoFoci
+## 2. Foci counting with autoFoci
 
 To use autoFoci please make sure that Java 8 is installed on your operating system:
 http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
