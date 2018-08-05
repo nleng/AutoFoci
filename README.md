@@ -10,6 +10,8 @@ You can download the complete repository as a zip file via [this link](archive/m
 All files needed for this step are included in the [ImageJ](ImageJ) folder. Please follow the instructions in the PDF guide(link??). 
  
 
+
+
 ## 2. Foci counting with autoFoci
 
 To use autoFoci please make sure that Java 8 is installed on your operating system:
