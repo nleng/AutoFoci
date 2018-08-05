@@ -19,6 +19,7 @@ To use autoFoci please make sure that [Java 8](http://www.oracle.com/technetwork
 Then please download the [autoFoci.jar](autoFoci/autoFoci.jar?raw=true) file and execute it. 
 
 You can find a short guide to perform an analysis with demo data here(link??). 
+
 For a more detailed instruction please follow the PDF guide(link??). 
 
 The ImageJ version used within autoFoci is not compatible with Java 9, but we are working on support for it. 
