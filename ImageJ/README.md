@@ -1,4 +1,4 @@
-# Generating single cell image
+# Generation of single cell images
 
 This directory contains all files needed to generate single cell images. 
 
