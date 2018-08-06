@@ -6,4 +6,4 @@ The ImageJ version provided already includes the necessary plugins ([Cellect_Ins
 
 Images for a demo test are provided in the [Test_Images_ImageJ.7z](Test_Images_ImageJ.7z?raw=true) file. 
 
-For instructions please follow the provided PDF guide (link??). 
+For instructions please follow the provided [PDF guide] (Guidance_to_process_images_for_AutoFoci.pdf). 
