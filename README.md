@@ -8,7 +8,7 @@ You can download the complete repository as a zip file via [this link](https://g
 
 The ImageJ version including the [cellect tools](ImageJ/Cellect_Installation.zip?raw=true) for image processing and [test images](ImageJ/Test_Images_ImageJ.7z?raw=true) (both provided as zip file) needed to try  this step out, are included in the ImageJ folder. Images created by this step are ready to be analysed in AutoFoci. Please follow the instructions in the [PDF guide](ImageJ/Guidance_to_process_images_for_AutoFoci.pdf).
 
-Typical installation time is only a few minutes. The expected run time for the demo data is less than 10 minutes to generate about 400 single cell images. The ImageJ version provided was tested on Windows 7 operating system. 
+The ImageJ version provided was tested on Windows 7 operating system. Typical installation time is only a few minutes. The expected run time for the demo data is less than 10 minutes to generate about 400 single cell images. 
 
 
 
